@@ -19,7 +19,7 @@
       <tbody>
       <% principal_relations.sort_by{|el| el.role.name.to_s}.each do |rel| %>
         <tr id="role-<%= rel.id %>" class="<%= cycle 'odd', 'even' %>">
-          <td class="role-name"><%= rel.role.name %></td>
+          <td class="role-name"><%= link_to(rel.role.name, edit_role_path(rel.role)) %></td>
           <td class="buttons">
             <%= link_to_remote( l(:button_delete),
                                 { :url => "destroy_global_role/#{rel.id}",
