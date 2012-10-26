@@ -4,7 +4,7 @@ module GlobalRolesHelper
     User.current.global_permission_to?(controller, action)
   end
 
-  def authorized_globaly
+  def authorized_globaly?
     User.current.global_permission_to?(params[:controller], params[:action])
   end   
 

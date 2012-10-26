@@ -6,7 +6,7 @@
 <div class="splitcontentleft" style="width:65%;">
   <% principal = @group.nil? ? @user : @group %>
   <% principal_relations = GlobalRole.where('user_id=?', principal.id)  %>
-  <% roles = Role.all %>
+  <% roles = Role.givable.where("#{Role.table_name}.id NOT IN (SELECT role_id FROM #{GlobalRole.table_name} WHERE user_id = ?)", principal.id) %>
 
   <% if principal_relations.any? %>
     <table class="list relations">
