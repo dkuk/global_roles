@@ -1,0 +1,25 @@
+label.one-name {display:block;}
+
+input.find-filter {
+  background-clip: border-box;
+  background-image: url(../images/magnifier.png);
+  background-repeat: no-repeat;
+  background-position: 2px 50%;
+  border: solid 1px #bbb;
+  border-radius: 4px;
+  color: black;
+  margin: 1px;
+  padding: 1px;
+  padding-left: 20px;
+  text-indent: 0px;
+  vertical-align: middle;
+  width: 90%;
+  height: 20px;
+}
+
+div.list-container {
+  overflow-x: auto;
+  overflow-y: auto;
+  width: 94%;
+  max-height: 330px;
+}
