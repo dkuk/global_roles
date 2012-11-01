@@ -14,6 +14,10 @@ module GlobalRolesHelper
     else
        render_403
     end
-  end   
+  end
+
+  def link_to_if_global_authorized(name, options = {}, html_options = nil, *parameters_for_method_reference)
+    link_to(name, options, html_options, *parameters_for_method_reference) if User.current.global_permission_to?(options[:controller] || params[:controller], options[:action])
+  end 
 
 end
