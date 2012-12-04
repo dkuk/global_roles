@@ -18,22 +18,22 @@ module GlobalRoles
         GlobalRole.find(params[:rid]).destroy
         respond_to do |format|
           format.html { redirect_to :controller => 'users', :action => 'edit', :tab => 'users-global-roles' }
-          format.js { render(:update) {|page| page.replace_html "tab-content-users-global-roles", :partial => 'roles/global_roles'} }
+          format.js
         end
       end
 
 
       def create_global_role
         @user = User.find(params[:id])
-        roles = params[:roles]
+        @roles = params[:roles]
 
-        if roles.is_a?(Array)
-          roles.each{ |role_id| GlobalRole.create(:user_id => @user.id, :role_id => role_id ) }
+        if @roles.is_a?(Array)
+          @roles.each{ |role_id| GlobalRole.create(:user_id => @user.id, :role_id => role_id ) }
         end  
         
         respond_to do |format|        
           format.html { redirect_to :controller => 'users', :action => 'edit', :tab => 'users-global-roles' }
-          format.js { render(:update) {|page| page.replace_html "tab-content-users-global-roles", :partial => 'roles/global_roles'} }
+          format.js
         end
       end
 
