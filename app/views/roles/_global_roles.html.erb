@@ -22,10 +22,6 @@
           <td class="role-name"><%= link_to(rel.role.name, edit_role_path(rel.role)) %></td>
           <td class="buttons">
             <%= delete_link( "destroy_global_role/#{rel.id}", :remote => true ) %>
-            <%#= link_to_remote( l(:button_delete),
-                                { :url => "destroy_global_role/#{rel.id}",
-                                  :method => :delete },
-                                :class => 'icon icon-del' ) %>
           </td>
         </tr>
       <% end %>
