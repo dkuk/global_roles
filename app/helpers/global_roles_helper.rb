@@ -1,11 +1,7 @@
 module GlobalRolesHelper
 
   def authorized_globaly_to?(controller, action)
-    if User.current.global_permission_to?(controller, action)
-      true
-    else
-       render_403
-    end
+    User.current.global_permission_to?(controller, action)
   end
 
   def authorized_globaly?
