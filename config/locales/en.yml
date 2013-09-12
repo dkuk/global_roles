@@ -3,3 +3,4 @@ en:
   label_global_roles: "Global roles"
   label_roles: "Roles"
   label_add_item: "Add item"
+  plugin_test_global_roles: "global_roles"
