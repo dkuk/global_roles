@@ -35,8 +35,8 @@
 
 <div class="splitcontentright" style="width:30%;">
   <%= form_tag({:action => "create_global_role"},{:id =>'select_roles', :remote => true}) do %>
-    <fieldset><legend><strong> <%= l(:label_roles) %> </strong></legend> 
-      <p><%= text_field_tag('filer_roles', '', :class => 'find-filter') %></p>
+    <fieldset><legend><strong> <%= l(:label_roles) %> </strong></legend>
+      <p><%= text_field_tag('filter_roles', '', :class => 'find-filter') %></p>
         <div id="roles-list" class="list-container">
           <% roles.sort_by{|el| el.name.to_s}.each do |r| %>
             <nobr><%= content_tag( :label,
@@ -44,7 +44,7 @@
                              :class => "one-name" ) %></nobr>
           <% end %>
         </div>
-      <p>      
+      <p>
       <%= submit_tag(l(:label_add_item), :id => 'record_add', :class => 'btn-def') %>
       </p>
     </fieldset>

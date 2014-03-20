@@ -3,15 +3,15 @@ module GlobalRoles
     def self.included(base)
       base.extend(ClassMethods)
       base.send(:include, InstanceMethods)
-  
+
       base.class_eval do
       end
     end
-  
-    module ClassMethods   
+
+    module ClassMethods
     end
-  
-    module InstanceMethods 
+
+    module InstanceMethods
 
       def destroy_global_role
         @user = User.find(params[:id])
@@ -29,15 +29,15 @@ module GlobalRoles
 
         if @roles.is_a?(Array)
           @roles.each{ |role_id| GlobalRole.create(:user_id => @user.id, :role_id => role_id ) }
-        end  
-        
-        respond_to do |format|        
+        end
+
+        respond_to do |format|
           format.html { redirect_to :controller => 'users', :action => 'edit', :tab => 'users-global-roles' }
           format.js
         end
       end
 
     end
-  
+
   end
 end

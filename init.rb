@@ -7,13 +7,16 @@ Redmine::Plugin.register :global_roles do
   author_url 'http://'
 end
 
+require 'global_roles/view_hooks'
+
 Rails.application.config.to_prepare do
   User.send(:include, GlobalRoles::UserPatch)
   Group.send(:include, GlobalRoles::GroupPatch)
   UsersHelper.send(:include, GlobalRoles::UsersHelperPatch)
   UsersController.send(:include, GlobalRoles::UsersControllerPatch)
   GroupsHelper.send(:include, GlobalRoles::GroupsHelperPatch)
-  GroupsController.send(:include, GlobalRoles::GroupsControllerPatch)  
-
+  GroupsController.send(:include, GlobalRoles::GroupsControllerPatch)
+  Role.send(:include, GlobalRoles::RolePatch)
+  RolesController.send(:include, GlobalRoles::RolesControllerPatch)
   ApplicationController.send(:include, GlobalRoles::ApplicationControllerPatch)
 end

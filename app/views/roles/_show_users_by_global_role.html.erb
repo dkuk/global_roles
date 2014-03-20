@@ -1,0 +1,50 @@
+<%= javascript_include_tag :global_roles, :plugin => :global_roles %>
+<%= stylesheet_link_tag 'global_roles', :plugin => 'global_roles' %>
+
+<%= content_tag(:div, js_err, :id => "errorExplanation") if local_assigns[:js_err] && !js_err.nil? %>
+
+<div>
+  <div class="splitcontentleft" style="width:65%;">
+    <% if @users.any? %>
+      <table class="list relations">
+        <thead>
+          <tr>
+            <th><%= l(:label_user) %></th>
+            <th style="width:15%"></th>
+          </tr>
+        </thead>
+        <tbody>
+        <% @users.sort_by{|el| el.name.to_s}.each do |user| %>
+          <% global_role = @global_roles.where(user_id: user.id).first %>
+          <tr id="user-<%= user.id %>" class="<%= cycle 'odd', 'even' %>">
+            <td class="user-name"><%= link_to(user.name, edit_user_path(user)) %></td>
+            <td class="buttons">
+              <%= delete_link( "destroy_global_role/#{global_role.id}", :remote => true ) %>
+            </td>
+          </tr>
+        <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p id="no_relation_groups_records" class="nodata"><%= l(:label_no_data) %></p>
+    <% end %>
+  </div>
+  <div class="splitcontentright" style="width:30%;">
+    <%= form_tag({:action => "create_global_role"},{:id =>'select_users', :remote => true}) do %>
+      <fieldset>
+        <legend><strong> <%= l(:label_user) %> </strong></legend>
+        <p><%= text_field_tag('filter_roles', '', :class => 'find-filter') %></p>
+          <div id="roles-list" class="list-container">
+            <% @excluded_users.each do |user| %>
+              <nobr><%= content_tag( :label,
+                               check_box_tag("users[]", user.id) + user.name.to_s,
+                               :class => "one-name" ) %></nobr>
+            <% end %>
+          </div>
+        <p>
+        <%= submit_tag(l(:label_add_item), :id => 'record_add', :class => 'btn-def') %>
+        </p>
+      </fieldset>
+    <% end %>
+  </div>
+</div>

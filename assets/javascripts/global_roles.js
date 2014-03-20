@@ -12,7 +12,7 @@ jQuery.expr[':'].Contains = function(elem, index, match) {
 
 jQuery(document).ready(function(){
 
-  jQuery('#filer_roles').bind("change keyup input",function(){
+  jQuery('#filter_roles').bind("change keyup input",function(){
     if (jQuery(this).val() == ""){
       jQuery('#roles-list label.one-name').show();
     }

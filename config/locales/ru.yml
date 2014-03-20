@@ -3,3 +3,4 @@ ru:
   label_global_roles: "Глобальные роли"
   label_roles: "Роли"
   label_add_item: "Добавить запись"
+  label_users_by_global_roles: "Пользователи c глобальной ролью"
