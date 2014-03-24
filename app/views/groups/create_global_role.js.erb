@@ -1,4 +1,4 @@
 $('#tab-content-groups-global-roles').html('<%= escape_javascript(render :partial => 'roles/global_roles') %>');
-<% @roles.each do |role| %>
-  $('#roles-<%= role %>').effect("highlight");
+<% @global_role_ids.each do |role_id| %>
+  $('#role-<%= role_id %>').effect("highlight", {}, 1200);
 <% end %>

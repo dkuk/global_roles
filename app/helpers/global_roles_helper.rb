@@ -8,7 +8,7 @@ module GlobalRolesHelper
     if User.current.global_permission_to?(params[:controller], params[:action])
       true
     else
-       render_403
+      render_403
     end
   end
 
@@ -18,9 +18,47 @@ module GlobalRolesHelper
 
   def roles_tabs
     tabs = [{:name => 'roles_edit', :partial => 'roles/edit_tab', :label => :label_permissions},
-            {:name => 'users_by_global_role', :partial => 'roles/show_users_by_global_role', :label => :label_users_by_global_roles},
+            {:name => 'users_by_global_role', :partial => 'roles/show_users_by_global_role', :label => :label_users_by_global_role},
+            {:name => 'users_by_role', :partial => 'roles/show_users_by_role', :label => :label_users_by_role}
            ]
+  end
 
+  def projects_select_tag(html_id, projects)
+    tag_options = options_for_select([["--- #{l(:actionview_instancetag_blank_option)} ---", '']]);
+    tag_options << options_from_collection_for_select(projects, 'id', 'name')
+    select_tag html_id, tag_options
+  end
+
+  def principals_for_role_check_box_tags(name, principals)
+    s = ''
+    principals.each do |principal|
+      group_class = principal.instance_of?(Group) ? "group" : ""
+      s << "<label class=#{group_class}>#{ check_box_tag name, principal.id, false, :id => nil, :class => group_class }#{h principal}</label>\n"
+    end
+    s.html_safe
+  end
+
+  def render_principals_for_role(role)
+    project_id = params[:project_id]
+    if project_id.to_s.empty? then project_id = 0 end
+    principals = Principal.active.where("#{Principal.table_name}.id NOT IN
+                                        (SELECT #{Member.table_name}.user_id FROM #{Member.table_name}
+                                         INNER JOIN #{Project.table_name} ON #{Project.table_name}.id = #{Member.table_name}.project_id
+                                         INNER JOIN #{MemberRole.table_name} ON #{MemberRole.table_name}.member_id = #{Member.table_name}.id
+                                         WHERE #{Project.table_name}.id = ? AND #{MemberRole.table_name}.role_id = ?)", project_id, role.id)
+                          .like(params[:user_name]).order(:type, :lastname)
+
+    principal_count = principals.count
+    principal_pages = Redmine::Pagination::Paginator.new principal_count, 100, params['page']
+    principals = principals.offset(principal_pages.offset).limit(principal_pages.per_page).all
+
+    s = content_tag('div', principals_for_role_check_box_tags('principals[]', principals), :id => 'principals')
+
+    links = pagination_links_full(principal_pages, principal_count, :per_page_links => false) {|text, parameters, options|
+      link_to text, autocomplete_for_user_role_path(role, parameters.merge(:user_name => params[:user_name], :format => 'js')), :remote => true
+    }
+
+    s + content_tag('p', links, :class => 'pagination')
   end
 
 end

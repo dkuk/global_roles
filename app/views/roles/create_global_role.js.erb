@@ -1,4 +1,4 @@
 $('#tab-content-users_by_global_role').html('<%= escape_javascript(render :partial => 'roles/show_users_by_global_role') %>');
-<% @user_ids.each do |user_id| %>
-  $('#user-<%= user_id %>').effect("highlight", {}, 1200);
+<% @principal_ids.each do |principal_id| %>
+  $('#principal-<%= principal_id %>').effect("highlight", {}, 1200);
 <% end %>

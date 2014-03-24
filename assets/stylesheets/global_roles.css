@@ -23,3 +23,20 @@ div.list-container {
   width: 94%;
   max-height: 330px;
 }
+
+td.group {
+  padding-left: 20px !important;
+  background: url(../../../images/group.png) no-repeat 2px 50%;
+}
+
+label.group {
+  background: url(../../../images/group.png) no-repeat 18px 50%;
+}
+
+input.group {
+  margin-right: 18px;
+}
+
+input#add_user_to_role[disabled]{
+  color: #484848;
+}

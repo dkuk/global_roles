@@ -1,0 +1,80 @@
+
+<%= content_tag(:div, js_err, :id => "errorExplanation") if local_assigns[:js_err] && !js_err.nil? %>
+
+<div>
+  <div class="splitcontentleft" style="width:65%;">
+    <% if @role_principals.any? %>
+      <table class="list relations">
+        <thead>
+          <tr>
+            <th><%= l(:label_user) %> / <%= l(:label_group) %></th>
+            <th><%= l(:label_project) %></th>
+            <th style="width:15%"></th>
+          </tr>
+        </thead>
+        <tbody>
+        <% @role_principals.sort_by{|el| [el.type, el.lastname.to_s]}.each do |principal| %>
+          <% render_principal = true %>
+          <% principal.projects.each do |project| %>
+            <% if render_principal %>
+              <tr id="principal-<%= principal.id %>" class="<%= cycle 'odd', 'even' %>">
+              <% group_class = principal.instance_of?(Group) ? "group" : "" %>
+                <td class="principal-name <%= group_class %>">
+                  <% if principal.instance_of?(User) %>
+                    <%= link_to(principal.name, edit_user_path(principal)) %></td>
+                  <% elsif principal.instance_of?(Group) %>
+                    <%= link_to(principal.name, edit_group_path(principal)) %></td>
+                  <% end %>
+                <td class="project-name">
+                <% if project.respond_to?('name') %>
+                  <%= link_to(project.name, edit_project_path(project)) %>
+                <% end %>
+              </td>
+              <td class="buttons">
+                <%= link_to("<span>#{l(:button_delete)}</span>".html_safe, "remove_user_from_role/#{principal.id}/projects/#{project.id}", :method => :delete, :remote => true, :class => 'in_link icon icon-del' ) %>
+              </td>
+            </tr>
+            <% render_principal = false %>
+            <% else %>
+              <tr class="<%= cycle 'odd', 'even' %>">
+                <td></td>
+                <td class="project-name">
+                  <% if project.respond_to?('name') %>
+                    <%= link_to(project.name, edit_project_path(project)) %>
+                  <% end %>
+                </td>
+                <td class="buttons">
+                  <%= link_to("<span>#{l(:button_delete)}</span>".html_safe, "remove_user_from_role/#{principal.id}/projects/#{project.id}", :method => :delete, :remote => true, :class => 'in_link icon icon-del' ) %>
+                </td>
+              </tr>
+            <% end %>
+          <% end %>
+        <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p id="no_relation_groups_records" class="nodata"><%= l(:label_no_data) %></p>
+    <% end %>
+  </div>
+  <div class="splitcontentright" style="width:30%;">
+    <%= form_tag({:action => "add_user_to_role"},{:id =>'select_users', :remote => true}) do %>
+      <fieldset>
+        <legend><strong> <%= l(:label_add_user_to_role) %> </strong></legend>
+        </br>
+        <strong><%= l(:label_project) %></strong>
+        <p><%= projects_select_tag('project_id', @projects) %></p>
+        <%= javascript_tag "observeSearchfieldRoleUsers(null, '#{ escape_javascript autocomplete_for_user_role_path(@role) }')" %>
+
+        <strong> <%= l(:label_user) %> / <%= l(:label_group) %> </strong>
+        <p><%= text_field_tag('filter_users', '', :class => 'find-filter') %></p>
+        <div id="users-list" class="list-container">
+          <%= render_principals_for_role(@role) %>
+        </div>
+
+        <p>
+          <%= submit_tag(l(:label_add_item), :id => 'add_user_to_role', :class => 'btn-def', :disabled => 'disabled') %>
+        </p>
+      </fieldset>
+    <% end %>
+  </div>
+</div>

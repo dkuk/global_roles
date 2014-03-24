@@ -4,4 +4,6 @@ en:
   label_roles: "Roles"
   label_add_item: "Add item"
   plugin_test_global_roles: "global_roles"
-  label_users_by_global_roles: "Users with global role"
+  label_users_by_global_role: "Users with global role"
+  label_users_by_role: "Users with project role"
+  label_add_user_to_role: "Add user to role"

@@ -5,21 +5,27 @@
 
 <div>
   <div class="splitcontentleft" style="width:65%;">
-    <% if @users.any? %>
+    <% if @principals.any? %>
       <table class="list relations">
         <thead>
           <tr>
-            <th><%= l(:label_user) %></th>
+            <th><%= l(:label_user) %> / <%= l(:label_group) %></th>
             <th style="width:15%"></th>
           </tr>
         </thead>
         <tbody>
-        <% @users.sort_by{|el| el.name.to_s}.each do |user| %>
-          <% global_role = @global_roles.where(user_id: user.id).first %>
-          <tr id="user-<%= user.id %>" class="<%= cycle 'odd', 'even' %>">
-            <td class="user-name"><%= link_to(user.name, edit_user_path(user)) %></td>
+        <% @principals.sort_by{|el| [el.type, el.lastname.to_s]}.each do |principal| %>
+          <% global_role = @global_roles.where(user_id: principal.id).first %>
+          <tr id="principal-<%= principal.id %>" class="<%= cycle 'odd', 'even' %>">
+          <% group_class = principal.instance_of?(Group) ? "group" : "" %>
+            <td class="principal-name <%= group_class %>">
+              <% if principal.instance_of?(User) %>
+                <%= link_to(principal.name, edit_user_path(principal)) %></td>
+              <% elsif principal.instance_of?(Group) %>
+                <%= link_to(principal.name, edit_group_path(principal)) %></td>
+              <% end %>
             <td class="buttons">
-              <%= delete_link( "destroy_global_role/#{global_role.id}", :remote => true ) %>
+              <%= link_to("<span>#{l(:button_delete)}</span>".html_safe, "destroy_global_role/#{global_role.id}", :remote => true, :class => "in_link icon icon-del" ) %>
             </td>
           </tr>
         <% end %>
@@ -32,13 +38,14 @@
   <div class="splitcontentright" style="width:30%;">
     <%= form_tag({:action => "create_global_role"},{:id =>'select_users', :remote => true}) do %>
       <fieldset>
-        <legend><strong> <%= l(:label_user) %> </strong></legend>
+        <legend><strong> <%= l(:label_user) %> / <%= l(:label_group) %> </strong></legend>
         <p><%= text_field_tag('filter_roles', '', :class => 'find-filter') %></p>
           <div id="roles-list" class="list-container">
-            <% @excluded_users.each do |user| %>
+            <% @other_principals.sort_by{|el| [el.type, el.lastname.to_s]}.each do |principal| %>
+              <% group_class = principal.instance_of?(Group) ? "group" : "" %>
               <nobr><%= content_tag( :label,
-                               check_box_tag("users[]", user.id) + user.name.to_s,
-                               :class => "one-name" ) %></nobr>
+                               check_box_tag("principals[]", principal.id, false, :class => group_class) + principal.name.to_s,
+                               :class => "one-name #{group_class}" ) %></nobr>
             <% end %>
           </div>
         <p>
