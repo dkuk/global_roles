@@ -62,4 +62,15 @@ jQuery(document).ready(function(){
       jQuery('#roles-list label.one-name:Contains('+value+')').show();
     }
   });
+
+  jQuery('#filter_users').bind("change keyup input",function(){
+    var value = jQuery(this).val().trim();
+    if (value == ""){
+      jQuery('#users-list label.one-name').show();
+    }
+    else{
+      jQuery('#users-list label.one-name').hide();
+      jQuery('#users-list label.one-name:Contains('+value+')').show();
+    }
+  });
 })

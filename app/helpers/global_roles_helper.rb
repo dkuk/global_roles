@@ -33,7 +33,7 @@ module GlobalRolesHelper
     s = ''
     principals.each do |principal|
       group_class = principal.instance_of?(Group) ? "group" : ""
-      s << "<label class=#{group_class}>#{ check_box_tag name, principal.id, false, :id => nil, :class => group_class }#{h principal}</label>\n"
+      s << "<label class='one-name #{group_class}'>#{check_box_tag name, principal.id, false, :id => nil, :class => group_class}#{h principal}</label>\n"
     end
     s.html_safe
   end

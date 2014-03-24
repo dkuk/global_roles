@@ -39,11 +39,11 @@
     <%= form_tag({:action => "create_global_role"},{:id =>'select_users', :remote => true}) do %>
       <fieldset>
         <legend><strong> <%= l(:label_user) %> / <%= l(:label_group) %> </strong></legend>
-        <p><%= text_field_tag('filter_roles', '', :class => 'find-filter') %></p>
-          <div id="roles-list" class="list-container">
+        <p><%= text_field_tag('filter_users', '', :class => 'find-filter') %></p>
+          <div id="users-list" class="list-container">
             <% @other_principals.sort_by{|el| [el.type, el.lastname.to_s]}.each do |principal| %>
               <% group_class = principal.instance_of?(Group) ? "group" : "" %>
-              <nobr><%= content_tag( :label,
+              <nobr><%= content_tag(:label,
                                check_box_tag("principals[]", principal.id, false, :class => group_class) + principal.name.to_s,
                                :class => "one-name #{group_class}" ) %></nobr>
             <% end %>
