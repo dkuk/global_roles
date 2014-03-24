@@ -52,7 +52,7 @@ jQuery(document).ready(function(){
     }
   });
 
-  jQuery('#filter_roles').bind("change keyup input",function(){
+  jQuery('#filter_roles').bind("change keyup input", function(){
     var value = jQuery(this).val().trim();
     if (value == ""){
       jQuery('#roles-list label.one-name').show();
@@ -63,7 +63,7 @@ jQuery(document).ready(function(){
     }
   });
 
-  jQuery('#filter_users').bind("change keyup input",function(){
+  jQuery('#filter_users').bind("change keyup input", function(){
     var value = jQuery(this).val().trim();
     if (value == ""){
       jQuery('#users-list label.one-name').show();
@@ -71,6 +71,17 @@ jQuery(document).ready(function(){
     else{
       jQuery('#users-list label.one-name').hide();
       jQuery('#users-list label.one-name:Contains('+value+')').show();
+    }
+  });
+
+  jQuery('#filter_users_global_roles').bind("change keyup input", function(){
+    var value = jQuery(this).val().trim();
+    if (value == ""){
+      jQuery('#users-list-global-roles label.one-name').show();
+    }
+    else{
+      jQuery('#users-list-global-roles label.one-name').hide();
+      jQuery('#users-list-global-roles label.one-name:Contains('+value+')').show();
     }
   });
 })

@@ -15,8 +15,8 @@ $(document).ready(function(){
     })
     // put cut content back if request failed
     .error(function(jqXHR, textStatus, errorThrown){
-      console.log(errorThrown)
-     // $('div#content h2').after(edit_partial)
+     // console.log(errorThrown)
+      $('div#content h2').after(edit_partial)
     });
 
 });
