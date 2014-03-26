@@ -1,5 +1,3 @@
-<%= javascript_include_tag :global_roles, :plugin => :global_roles %>
-<%= stylesheet_link_tag 'global_roles', :plugin => 'global_roles' %>
 
 <%= content_tag(:div, js_err, :id => "errorExplanation") if local_assigns[:js_err] && !js_err.nil? %>
 
@@ -25,7 +23,7 @@
                 <%= link_to(principal.name, edit_group_path(principal)) %></td>
               <% end %>
             <td class="buttons">
-              <%= link_to("<span>#{l(:button_delete)}</span>".html_safe, "destroy_global_role/#{global_role.id}", :remote => true, :class => "in_link icon icon-del" ) %>
+              <%= link_to("<span>#{l(:button_delete)}</span>".html_safe, "destroy_global_role/#{global_role.id}", :method => :delete, :remote => true, :class => "in_link icon icon-del" ) %>
             </td>
           </tr>
         <% end %>

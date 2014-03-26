@@ -15,8 +15,15 @@ $(document).ready(function(){
     })
     // put cut content back if request failed
     .error(function(jqXHR, textStatus, errorThrown){
-     // console.log(errorThrown)
       $('div#content h2').after(edit_partial)
     });
+
+  // Let's initialize global variable for autocomplete to work and pass correct url for ajax GET request from backend
+  // Also initialize default value for checkbox_selector field, which holds jquery selector for checked checkboxes
+  var AutoCompleteForUser = AutoCompleteForUser || {};
+  AutoCompleteForUser.url = '<%= escape_javascript autocomplete_for_user_role_path(@role) %>'
+  if (typeof AutoCompleteForUser.checkbox_selector === 'undefined') {
+    AutoCompleteForUser.checkbox_selector = '';
+  }
 
 });

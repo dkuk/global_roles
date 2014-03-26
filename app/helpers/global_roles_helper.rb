@@ -29,11 +29,11 @@ module GlobalRolesHelper
     select_tag html_id, tag_options
   end
 
-  def principals_for_role_check_box_tags(name, principals)
+  def principals_for_role_checkbox_tags(name, principals)
     s = ''
     principals.each do |principal|
       group_class = principal.instance_of?(Group) ? "group" : ""
-      s << "<label class='one-name #{group_class}'>#{check_box_tag name, principal.id, false, :id => nil, :class => group_class}#{h principal}</label>\n"
+      s << "<label class='one-name #{group_class}'>#{check_box_tag name, principal.id, false, :id => principal.id, :class => group_class}#{h principal}</label>\n"
     end
     s.html_safe
   end
@@ -52,7 +52,7 @@ module GlobalRolesHelper
     principal_pages = Redmine::Pagination::Paginator.new principal_count, 100, params['page']
     principals = principals.offset(principal_pages.offset).limit(principal_pages.per_page).all
 
-    s = content_tag('div', principals_for_role_check_box_tags('principals[]', principals), :id => 'principals')
+    s = content_tag('div', principals_for_role_checkbox_tags('principals[]', principals), :id => 'principals')
 
     links = pagination_links_full(principal_pages, principal_count, :per_page_links => false) {|text, parameters, options|
       link_to text, autocomplete_for_user_role_path(role, parameters.merge(:user_name => params[:user_name], :format => 'js')), :remote => true
