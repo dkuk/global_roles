@@ -1,0 +1,34 @@
+<div class="tabs">
+  <ul>
+  <% tabs.each do |tab| -%>
+    <% html_options = {:id => "tab-#{tab[:name]}",
+                       :class => (tab[:name] != selected_tab ? nil : 'selected'),
+                       :onclick => "showTab('#{tab[:name]}', this.href); this.blur(); return false;"} %>
+    <% html_options[:data] = {:url => tab[:url], :loaded => false} if !tab[:url].nil? %>
+    <li><%= link_to l(tab[:label]), {:tab => tab[:name] }, html_options %></li>
+  <% end -%>
+  </ul>
+  <div class="tabs-buttons" style="display:none;">
+    <button class="tab-left" onclick="moveTabLeft(this);"></button>
+    <button class="tab-right" onclick="moveTabRight(this);"></button>
+  </div>
+</div>
+
+<script>
+  $(document).ready(displayTabsButtons);
+  $(window).resize(displayTabsButtons);
+</script>
+
+<% tabs.each do |tab| -%>
+  <% if tab[:url].nil? %>
+    <%= content_tag('div', render(:partial => tab[:partial], :locals => {:tab => tab} ),
+                         :id => "tab-content-#{tab[:name]}",
+                         :style => (tab[:name] != selected_tab ? 'display:none' : nil),
+                         :class => 'tab-content') %>
+  <% else %>
+    <%= content_tag('div', '',
+                         :id => "tab-content-#{tab[:name]}",
+                         :style => (tab[:name] != selected_tab ? 'display:none' : nil),
+                         :class => 'tab-content') %>
+  <% end %>
+<% end -%>
