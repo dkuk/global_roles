@@ -102,7 +102,7 @@ function projectsFormShow(member_id){
   $member.find('input').prop('checked', false);
   $member.find(project_ids_selector).prop('checked', true);
 
-  var principal_id = $('#member-'+member_id).attr('data-principal-id');
+  var principal_id = $member.attr('data-principal-id');
 
   $member.find('#edit_user_projects_by_role_principal_id').val("");
   $member.find('#edit_user_projects_by_role_principal_id').val(principal_id);

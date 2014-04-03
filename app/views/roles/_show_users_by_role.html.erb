@@ -27,7 +27,7 @@
         <% @role_principals.each do |principal| %>
           <% principal_project_ids = principal.memberships.map{|member| member.try(:project).id} %>
           <% principal.memberships.each do |member| %>
-            <tr id="member-<%= member.id %>" data-principal-id="<%= principal.id %>" class="<%= cycle 'odd', 'even' %>">
+            <tr id="row-member-<%= member.id %>" data-principal-id="<%= principal.id %>" class="<%= cycle 'odd', 'even' %>">
               <% group_class = principal.instance_of?(Group) ? "glr-group" : "" %>
               <td class="principal-name <%= group_class %>">
                 <% if principal.instance_of?(User) %>
