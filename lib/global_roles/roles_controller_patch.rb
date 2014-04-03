@@ -73,6 +73,7 @@ module GlobalRoles
 
       def add_user_to_role
         @principal_ids = params[:principals] || []
+        @member_ids = []
 
         if @principal_ids.is_a?(Array)
           @principal_ids.each do |principal_id|
@@ -81,8 +82,11 @@ module GlobalRoles
               member.roles << @role
             end
             member.save
+            @member_ids << member.id
           end
         end
+        logger.debug("member_ids=#{@member_ids}")
+        logger.debug("principal_ids=#{@principal_ids}")
 
         respond_to do |format|
           format.html { redirect_to :controller => 'roles', :action => 'edit', :tab => 'users_by_role'}
