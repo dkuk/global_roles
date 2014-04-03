@@ -16,7 +16,15 @@ module GlobalRoles
       def render_tabs_with_ajax(tabs, selected=params[:tab])
         if tabs.respond_to?(:ajax)
           if (tabs.ajax)
-            render :partial => 'roles/tabs', :locals => {:tabs => tabs, :selected_tab => selected}
+            if (tabs.any?)
+              unless tabs.detect {|tab| tab[:name] == selected}
+                selected = nil
+              end
+              selected ||= tabs.first[:name]
+              render :partial => 'roles/tabs', :locals => {:tabs => tabs, :selected_tab => selected}
+            else
+              content_tag 'p', l(:label_no_data), :class => "nodata"
+            end
           else
             render_tabs_without_ajax(tabs, selected)
           end
