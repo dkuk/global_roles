@@ -1,12 +1,20 @@
-<%= stylesheet_link_tag 'global_roles', :plugin => 'global_roles' %>
-
-<%= javascript_include_tag :global_roles, :plugin => :global_roles %>
+<% @role_principals = role.principals %>
+<% @other_role_principals = Principal.active.includes(:projects, :memberships) - @role_principals %>
+<% @projects = Project.active.all %>
 
 <%= content_tag(:div, js_err, :id => "errorExplanation") if local_assigns[:js_err] && !js_err.nil? %>
 
+<script type="text/javascript">
+// <![CDATA[
+  $(document).ready(function(){
+    RMPlus.GlobalRoles.$projectsForm = $('#member-projects-form');
+    $('div .I').remove();
+  });
+// ]]>
+</script>
 <div>
   <div class="splitcontentleft" style="width:65%;">
-    <% if @role_principals.any? %>
+    <% if @role_principals != [] %>
       <table class="list relations">
         <thead>
           <tr>
@@ -16,39 +24,23 @@
           </tr>
         </thead>
         <tbody>
-        <% @role_principals.sort_by{|el| [el.type, el.lastname.to_s]}.each do |principal| %>
-          <% render_principal = true %>
+        <% @role_principals.each do |principal| %>
+          <% principal_project_ids = principal.memberships.map{|member| member.try(:project).id} %>
           <% principal.memberships.each do |member| %>
-            <tr id="principal-<%= principal.id %>" class="<%= cycle 'odd', 'even' %>">
-            <% if render_principal %>
-              <% group_class = principal.instance_of?(Group) ? "group" : "" %>
+            <tr data-principal-id="<%= principal.id %>" class="<%= cycle 'odd', 'even' %>">
+              <% group_class = principal.instance_of?(Group) ? "glr-group" : "" %>
               <td class="principal-name <%= group_class %>">
                 <% if principal.instance_of?(User) %>
                   <%= link_to(principal.name, edit_user_path(principal)) %></td>
                 <% elsif principal.instance_of?(Group) %>
                   <%= link_to(principal.name, edit_group_path(principal)) %></td>
                 <% end %>
-            <% else %>
-              <td></td>
-            <% end %>
-              <td class="project-name">
+              <td class="project-name" id="member-<%= member.id %>" data-project-ids="<%= principal_project_ids %>"
+                                                                    data-principal-id="<%= principal.id %>">
                 <%= link_to_project_settings(member.project, {}, :id => "member-#{member.id}-project-link" , :title => member.project.short_description) %>
-                <%= form_tag({:controller => 'roles', :action => 'edit_user_projects_by_role', :id => @role.id, :principal_id => principal.id}, {:method => :put, :remote => true, :id => "member-#{member.id}-projects-form", :style => 'display: none;'}) do %>
-                  <p>
-                    <% @projects.each do |project| %>
-                    <label><%= check_box_tag 'membership[project_ids][]', project.id, principal.projects.include?(project) %>
-                      <%=h project %>
-                    </label><br />
-                    <% end %>
-                  </p>
-                  <%= hidden_field_tag 'membership[project_ids][]', '' %>
-                  <p><%= submit_tag l(:button_change), :class => "small" %>
-                  <%= link_to_function l(:button_cancel), "$('#member-#{member.id}-project-link').show(); $('#member-#{member.id}-projects-form').hide(); return false;" %>
-                  </p>
-                <% end %>
               </td>
               <td class="buttons">
-                <%= link_to_function "<span>#{l(:button_edit)}</span>".html_safe, "$('#member-#{member.id}-project-link').hide(); $('#member-#{member.id}-projects-form').show(); return false;", :class => 'icon icon-edit' %>
+                <%= link_to_function "<span>#{l(:button_edit)}</span>".html_safe, "projectsFormShow(#{member.id})", :class => 'icon icon-edit' %>
                 <%= link_to("<span>#{l(:button_delete)}</span>".html_safe, "remove_user_from_role/#{member.id}", :method => :delete, :remote => true, :class => 'in_link icon icon-del' ) %>
               </td>
             </tr>
@@ -61,8 +53,25 @@
       <p id="no_relation_groups_records" class="nodata"><%= l(:label_no_data) %></p>
     <% end %>
   </div>
+
+  <div class="I">
+    <%= form_tag({:controller => 'roles', :action => 'edit_user_projects_by_role', :id => role.id}, {:method => :put, :remote => true, :id => "member-projects-form"}) do %>
+      <p>
+        <% @projects.each do |project| %>
+        <label><%= check_box_tag 'membership[project_ids][]', project.id, false, :id => project.id %>
+          <%=h project %>
+        </label><br />
+        <% end %>
+      </p>
+      <%= hidden_field_tag 'membership[principal_id]', '', :id => 'edit_user_projects_by_role_principal_id' %>
+      <p><%= submit_tag l(:button_change), :class => "small" %>
+      <%= link_to l(:button_cancel), "#", :id => 'projects-form-cancel' %>
+      </p>
+    <% end %>
+  </div>
+
   <div class="splitcontentright" style="width:30%;">
-    <%= form_tag({:action => "add_user_to_role"},{:id =>'select_users', :remote => true}) do %>
+    <%= form_tag({:action => 'add_user_to_role'},{:id =>'select_users', :remote => true}) do %>
       <fieldset>
         <legend><strong> <%= l(:label_add_user_to_role) %> </strong></legend>
         </br>
@@ -70,14 +79,14 @@
         <p><%= projects_select_tag('project_id', @projects) %></p>
 
         <strong> <%= l(:label_user) %> / <%= l(:label_group) %> </strong>
-        <p><%= text_field_tag('filter_users', '', :class => 'find-filter autocomplete') %></p>
-        <div id="users-list" class="list-container">
-            <%= render_principals_for_role(@role) %>
+        <p><%= text_field_tag('filter_users', '', :class => 'find-filter autocomplete', :data => {:url => autocomplete_for_user_role_path(role)}) %></p>
+        <div id="users-list" class="glr-list-container">
+            <%= render_principals_for_role(role) %>
         </div>
-
-        <p>
+        <div class="glr-submit">
           <%= submit_tag(l(:label_add_item), :id => 'add_user_to_role', :class => 'btn-def', :disabled => 'disabled') %>
-        </p>
+          <div class="glr-no-project-selected"><%= l(:label_no_project_selected) %></div>
+        </div>
       </fieldset>
     <% end %>
   </div>

@@ -1,9 +1,11 @@
+<% @principals = role.principals_by_global_roles %>
+<% @global_roles = role.global_roles %>
 
 <%= content_tag(:div, js_err, :id => "errorExplanation") if local_assigns[:js_err] && !js_err.nil? %>
 
 <div>
   <div class="splitcontentleft" style="width:65%;">
-    <% if @principals.any? %>
+    <% if @principals != [] %>
       <table class="list relations">
         <thead>
           <tr>
@@ -12,10 +14,10 @@
           </tr>
         </thead>
         <tbody>
-        <% @principals.sort_by{|el| [el.type, el.lastname.to_s]}.each do |principal| %>
+        <% @principals.each do |principal| %>
           <% global_role = @global_roles.where(user_id: principal.id).first %>
           <tr id="principal-<%= principal.id %>" class="<%= cycle 'odd', 'even' %>">
-          <% group_class = principal.instance_of?(Group) ? "group" : "" %>
+          <% group_class = principal.instance_of?(Group) ? "glr-group" : "" %>
             <td class="principal-name <%= group_class %>">
               <% if principal.instance_of?(User) %>
                 <%= link_to(principal.name, edit_user_path(principal)) %></td>
@@ -38,16 +40,11 @@
       <fieldset>
         <legend><strong> <%= l(:label_user) %> / <%= l(:label_group) %> </strong></legend>
         <p><%= text_field_tag('filter_users_global_roles', '', :class => 'find-filter') %></p>
-          <div id="users-list-global-roles" class="list-container">
-            <% @other_principals.sort_by{|el| [el.type, el.lastname.to_s]}.each do |principal| %>
-              <% group_class = principal.instance_of?(Group) ? "group" : "" %>
-              <nobr><%= content_tag(:label,
-                               check_box_tag("principals[]", principal.id, false, :class => group_class) + principal.name.to_s,
-                               :class => "one-name #{group_class}" ) %></nobr>
-            <% end %>
+          <div id="users-list-global-roles" class="glr-list-container">
+            <%= render_principals_for_global_role(@principals) %>
           </div>
         <p>
-        <%= submit_tag(l(:label_add_item), :id => 'record_add', :class => 'btn-def') %>
+          <%= submit_tag(l(:label_add_item), :id => 'record_add', :class => 'btn-def') %>
         </p>
       </fieldset>
     <% end %>

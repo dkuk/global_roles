@@ -17,26 +17,77 @@ input.find-filter {
   height: 20px;
 }
 
-div.list-container {
+div.glr-list-container {
   overflow-x: auto;
   overflow-y: auto;
   width: 94%;
   max-height: 330px;
 }
+div.glr-list-container input.glr-group {
+  margin-right: 20px;
+}
+div#principals {
 
-td.group {
+}
+
+td.glr-group {
   padding-left: 20px !important;
   background: url(../../../images/group.png) no-repeat 2px 50%;
 }
 
-label.group {
-  background: url(../../../images/group.png) no-repeat 18px 50%;
+input.glr-group {
 }
-
-input.group {
-  margin-right: 18px;
+span.glr-group:before {
+  content: "";
+  background: url(../../../images/group.png) no-repeat 0 0;
+  position: relative;
+  width: 16px;
+  height: 16px;
+  top: 4px;
+  padding-left: 2px;
+  margin-left: 2px;
+  display: inline-block;
 }
 
 input#add_user_to_role[disabled]{
   color: #484848;
+}
+
+.I {
+  display: none;
+}
+
+.glr-preloader
+{
+  background: url("../images/loader.gif") no-repeat center;
+  width: 100%;
+  height: 200px;
+}
+
+div.glr-ajax_error
+{
+  background: url("../images/widget_error.png") no-repeat center bottom;
+  width: 100%;
+  height: 140px;
+  margin-left: auto;
+  margin-right: auto;
+}
+div.glr-ajax_error_text
+{
+  padding-top: 10px;
+  text-align: center;
+}
+#add_user_to_role{
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+div.glr-no-project-selected{
+  width: 94%;
+  border: 1px solid #D00;
+  margin: 4px 0px;
+  padding: 2px 5px;
+  background-color: #FFE3E3;
+  color: #800;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
 }

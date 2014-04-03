@@ -7,3 +7,4 @@ en:
   label_users_by_global_role: "Users with global role"
   label_users_by_role: "Users with project role"
   label_add_user_to_role: "Add user to role"
+  label_no_project_selected: "Please select the project to add user into"

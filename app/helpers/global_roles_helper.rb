@@ -18,9 +18,14 @@ module GlobalRolesHelper
 
   def roles_tabs
     tabs = [{:name => 'roles_edit', :partial => 'roles/edit_tab', :label => :label_permissions},
-            {:name => 'users_by_global_role', :partial => 'roles/show_users_by_global_role', :label => :label_users_by_global_role},
-            {:name => 'users_by_role', :partial => 'roles/show_users_by_role', :label => :label_users_by_role}
+            {:name => 'users_by_global_role', :label => :label_users_by_global_role, :url => url_for(controller: 'roles', action: 'show_users_by_global_role')},
+            {:name => 'users_by_role', :label => :label_users_by_role, :url => url_for(controller: 'roles', action: 'show_users_by_role')}
            ]
+    class << tabs
+      attr_accessor :ajax
+    end
+    tabs.ajax = true
+    return tabs
   end
 
   def projects_select_tag(html_id, projects)
@@ -30,12 +35,13 @@ module GlobalRolesHelper
   end
 
   def principals_for_role_checkbox_tags(name, principals)
-    s = ''
+    html = ''
     principals.each do |principal|
-      group_class = principal.instance_of?(Group) ? "group" : ""
-      s << "<label class='one-name #{group_class}'>#{check_box_tag name, principal.id, false, :id => principal.id, :class => group_class}#{h principal}</label>\n"
+      group_class = principal.instance_of?(Group) ? 'class="glr-group"' : ''
+      html << "<label class='one-name #{group_class}'>#{check_box_tag name, principal.id, false, :id => principal.id}"
+      html << "<span #{group_class}>#{h principal}</span></label>\n"
     end
-    s.html_safe
+    html.html_safe
   end
 
   def render_principals_for_role(role)
@@ -49,7 +55,7 @@ module GlobalRolesHelper
                           .like(params[:user_name]).order(:type, :lastname)
 
     principal_count = principals.count
-    principal_pages = Redmine::Pagination::Paginator.new principal_count, 100, params['page']
+    principal_pages = Redmine::Pagination::Paginator.new principal_count, 100, params[:page]
     principals = principals.offset(principal_pages.offset).limit(principal_pages.per_page).all
 
     s = content_tag('div', principals_for_role_checkbox_tags('principals[]', principals), :id => 'principals')
@@ -59,6 +65,12 @@ module GlobalRolesHelper
     }
 
     s + content_tag('p', links, :class => 'pagination')
+  end
+
+  def render_principals_for_global_role(principals)
+    other_principals = Principal.active - principals
+    other_principals = other_principals.sort_by{|el| [el.type, el.lastname.to_s]}
+    s = content_tag(:div, principals_for_role_checkbox_tags('principals[]', other_principals), :id => 'principals')
   end
 
 end

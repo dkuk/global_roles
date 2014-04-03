@@ -1,5 +1,4 @@
 $('#users-list').html('<%= escape_javascript(render_principals_for_role(@role)) %>');
-// otherwise all checkboxes will have their 'checked' attribute reset
-if (AutoCompleteForUser.checkbox_selector != null){
-  $(AutoCompleteForUser.checkbox_selector).prop('checked', 'checked');
-}
+
+var selector = $('#users-list').attr('data-checkbox-selector');
+$(selector).prop('checked', 'checked');

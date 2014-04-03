@@ -6,3 +6,4 @@ ru:
   label_users_by_global_role: "Пользователи c глобальной ролью"
   label_users_by_role: "Пользователи с ролью по проектам"
   label_add_user_to_role: "Добавить пользователя на эту роль"
+  label_no_project_selected: "Выберите проект, в который необходимо добавить пользователя на эту роль"

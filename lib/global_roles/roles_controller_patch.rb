@@ -10,7 +10,9 @@ module GlobalRoles
         include GlobalRolesHelper
         helper GlobalRolesHelper
 
-        before_filter :role_finder, :only => [:render_roles_tabs, :autocomplete_for_user, :destroy_global_role, :create_global_role, :remove_user_from_role, :add_user_to_role, :edit_user_projects_by_role]
+        before_filter :role_finder, :only => [:edit, :show_users_by_role, :show_users_by_global_role, :render_roles_tabs, :autocomplete_for_user,
+                                              :destroy_global_role, :create_global_role, :remove_user_from_role, :add_user_to_role,
+                                              :edit_user_projects_by_role]
       end
     end
 
@@ -22,19 +24,12 @@ module GlobalRoles
         @role = Role.find(params[:id])
       end
 
-      def render_roles_tabs
-        @principals = @role.principals_by_global_roles
-        @global_roles = @role.global_roles
-        @other_principals = Principal.active - @principals
+      def show_users_by_role
+        render :partial => 'roles/show_users_by_role', :locals => {:role => @role}
+      end
 
-        @role_principals = @role.principals
-        @other_role_principals = Principal.active.includes(:projects, :memberships) - @role_principals
-        @projects = Project.active.all
-
-        respond_to do |format|
-          format.js
-          format.html { redirect_to :controller => 'roles', :action => 'edit' }
-        end
+      def show_users_by_global_role
+        render :partial => 'roles/show_users_by_global_role', :locals => {:role => @role}
       end
 
       def autocomplete_for_user
@@ -46,14 +41,6 @@ module GlobalRoles
       def destroy_global_role
         global_role = GlobalRole.find(params[:gr_id])
         global_role.destroy
-
-        @global_roles = @role.global_roles
-        @principals = @role.principals_by_global_roles
-        @other_principals = Principal.active - @principals
-
-        @role_principals = @role.principals
-        @other_role_principals = Principal.active.includes(:projects, :memberships) - @role_principals
-        @projects = Project.active.all
 
         respond_to do |format|
           format.html { redirect_to :controller => 'roles', :action => 'edit', :tab => 'users_by_global_role' }
@@ -68,14 +55,6 @@ module GlobalRoles
           @principal_ids.each{|principal_id| GlobalRole.create(:user_id => principal_id, :role_id => @role.id ) }
         end
 
-        @global_roles = @role.global_roles
-        @principals = @role.principals_by_global_roles
-        @other_principals = Principal.active - @principals
-
-        @role_principals = @role.principals
-        @other_role_principals = Principal.active.includes(:projects, :memberships) - @role_principals
-        @projects = Project.active.all
-
         respond_to do |format|
           format.html { redirect_to :controller => 'roles', :action => 'edit', :tab => 'users_by_global_role' }
           format.js
@@ -85,9 +64,6 @@ module GlobalRoles
       def remove_user_from_role
         member_role = MemberRole.where(:member_id => params[:member_id], :role_id => @role.id).first
         member_role.destroy
-
-        @role_principals = @role.principals
-        @projects = Project.active.all
 
         respond_to do |format|
           format.html { redirect_to :controller => 'roles', :action => 'edit', :tab => 'users_by_role' }
@@ -108,11 +84,8 @@ module GlobalRoles
           end
         end
 
-        @role_principals = @role.principals
-        @projects = Project.active.all
-
         respond_to do |format|
-          format.html { redirect_to :controller => 'roles', :action => 'edit', :tab => 'users_by_role' }
+          format.html { redirect_to :controller => 'roles', :action => 'edit', :tab => 'users_by_role'}
           format.js
         end
       end
@@ -120,12 +93,14 @@ module GlobalRoles
       def edit_user_projects_by_role
         @principal_ids = []
         if params[:membership]
-          if params[:principal_id]
-            principal_id = params[:principal_id]
-            attrs = params[:membership].dup
-            project_ids = attrs.delete(:project_ids)
+          if params[:membership][:principal_id]
+            principal_id = params[:membership][:principal_id]
+            project_ids = params[:membership][:project_ids]
+            logger.debug("role=#{@role}")
+            logger.debug("project_ids=#{project_ids}")
 
-            member_roles = MemberRole.joins(:member).where('members.project_id NOT IN (?)', project_ids).where(:role_id => @role.id)
+            member_roles = MemberRole.joins(:member).where('members.project_id NOT IN (?)', project_ids)
+                                                    .where(:role_id => @role.id, :members => {:user_id => principal_id})
             member_roles.destroy_all
 
             project_ids.each do |project_id|
@@ -136,8 +111,6 @@ module GlobalRoles
             end
           end
         end
-        @role_principals = @role.principals
-        @projects = Project.active.all
 
         respond_to do |format|
           format.html { redirect_to :controller => 'roles', :action => 'edit', :tab => 'users_by_role' }

@@ -20,4 +20,5 @@ Rails.application.config.to_prepare do
   Role.send(:include, GlobalRoles::RolePatch)
   RolesController.send(:include, GlobalRoles::RolesControllerPatch)
   ApplicationController.send(:include, GlobalRoles::ApplicationControllerPatch)
+  ApplicationHelper.send(:include, GlobalRoles::ApplicationHelperPatch)
 end
