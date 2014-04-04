@@ -9,6 +9,21 @@
 $.expr[':'].Contains = function(elem, index, match) {
   return jQuery(elem).text().toUpperCase().indexOf(match[3].toUpperCase()) >= 0;
 };
+
+function showTab(name, url) {
+  $('div#content .tab-content').hide();
+  $('div.tabs a').removeClass('selected');
+  $('#tab-content-' + name).show();
+  $('#tab-' + name).addClass('selected');
+
+  if (window.History && window.History.enabled){
+    window.History.pushState(null, name, url);
+  }
+
+  return false;
+}
+
+
 // Namespace declaration
 var RMPlus = (function (my) {
   return my;
@@ -48,6 +63,24 @@ RMPlus.Utils = (function(my) {
     };
   }
 
+  my.showTab = function(name, a) {
+    $('div#content .tab-content').hide();
+    $('div.tabs a').removeClass('selected');
+    $('#tab-content-' + name).show();
+    $('#tab-' + name).addClass('selected');
+    if ("replaceState" in window.history) {
+      window.history.replaceState(null, $(a).first().text(), a.href);
+    }
+    a.blur();
+    return false;
+  }
+
+  my.parseQueryParams = function(){
+    var queryDict = {};
+    location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]});
+    return queryDict;
+  }
+
   return my;
 })(RMPlus.Utils || {});
 
@@ -76,7 +109,6 @@ RMPlus.GlobalRoles = (function(my){
         });
       }
       showTab(name, this.href);
-      this.blur();
   }
 
   return my;
@@ -127,6 +159,26 @@ $(document).ready(function(){
   $('form.edit_role').remove();
   $('div#tab-content-roles_edit').html(edit_partial);
 
+  var History = window.History; // Note: We are using a capital H instead of a lower h
+  if ( !History.enabled ) {
+    return false;
+  }
+  else {
+    // Bind to StateChange Event
+    History.Adapter.bind(window,'statechange',function() { // Note: We are using statechange instead of popstate
+      var State = History.getState();
+      var params = RMPlus.Utils.parseQueryParams();
+      var selected = params.tab || '';
+      console.log(params);
+
+      var selected_tab = $('#tab-'+selected).get(0);
+      RMPlus.GlobalRoles.fetchData.apply(selected_tab);
+      console.log(State.url);
+    });
+  }
+
+
+
   // override redmine onclick handlers with jQuery event handlers
   var regexp = new RegExp("^[^-]*-");
   $('div.tabs a').each(function(){
@@ -140,6 +192,7 @@ $(document).ready(function(){
   });
   var selected_tab = $('div.tabs a.selected').get(0);
   RMPlus.GlobalRoles.fetchData.apply(selected_tab);
+
 
 
   function FetchUsers(){

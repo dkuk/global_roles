@@ -10,6 +10,8 @@ module GlobalRoles
         include GlobalRolesHelper
         helper GlobalRolesHelper
 
+        alias_method_chain :edit, :ajax
+
         before_filter :role_finder, :only => [:edit, :show_users_by_role, :show_users_by_global_role, :render_roles_tabs, :autocomplete_for_user,
                                               :destroy_global_role, :create_global_role, :remove_user_from_role, :add_user_to_role,
                                               :edit_user_projects_by_role]
@@ -22,6 +24,13 @@ module GlobalRoles
     module InstanceMethods
       def role_finder
         @role = Role.find(params[:id])
+      end
+
+      def edit_with_ajax
+        href = request.url
+        logger.debug("request url = #{href}")
+
+        edit_without_ajax
       end
 
       def show_users_by_role
