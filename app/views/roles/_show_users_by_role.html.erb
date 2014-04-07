@@ -4,14 +4,6 @@
 
 <%= content_tag(:div, js_err, :id => "errorExplanation") if local_assigns[:js_err] && !js_err.nil? %>
 
-<script type="text/javascript">
-// <![CDATA[
-//  $(document).ready(function(){
-//    RMPlus.GlobalRoles.$projectsForm = $('#member-projects-form');
-//    $('div .I').remove();
-//  });
-// ]]>
-</script>
 <div>
   <div class="splitcontentleft" style="width:65%;">
     <% if @role_principals != [] %>
