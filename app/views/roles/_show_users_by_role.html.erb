@@ -18,8 +18,7 @@
         <tbody>
         <% @role_principals.each do |principal| %>
           <% principal_project_ids = principal.memberships.map{|member| member.try(:project).id} %>
-          <% principal.memberships.each do |member| %>
-            <tr id="row-member-<%= member.id %>" data-principal-id="<%= principal.id %>" class="<%= cycle 'odd', 'even' %>">
+            <tr id="principal-<%= principal.id %>" class="<%= cycle 'odd', 'even' %>">
               <% group_class = principal.instance_of?(Group) ? "glr-group" : "" %>
               <td class="principal-name <%= group_class %>">
                 <% if principal.instance_of?(User) %>
@@ -27,17 +26,20 @@
                 <% elsif principal.instance_of?(Group) %>
                   <%= link_to(principal.name, edit_group_path(principal)) %></td>
                 <% end %>
-              <td class="project-name" id="member-<%= member.id %>" data-project-ids="<%= principal_project_ids %>"
-                                                                    data-principal-id="<%= principal.id %>">
-                <%= link_to_project_settings(member.project, {}, :id => "member-#{member.id}-project-link" , :title => member.project.short_description) %>
+              <td class="project-names" id="principal-<%= principal.id %>-projects"
+                                        data-project-ids="<%= principal_project_ids %>"
+                                        data-principal-id="<%= principal.id %>">
+
+              <span id="principal-<%= principal.id %>-project-links">
+              <%= principal.memberships.map{|member| link_to_project_settings(member.project, {}, :id => "member-#{member.id}-project-link",
+                                                                                                  :title => member.project.short_description)}.join(', ').html_safe %>
+              </span>
               </td>
               <td class="buttons">
-                <%= link_to_function "<span>#{l(:button_edit)}</span>".html_safe, "projectsFormShow(#{member.id})", :class => 'icon icon-edit' %>
-                <%= link_to("<span>#{l(:button_delete)}</span>".html_safe, "remove_user_from_role/#{member.id}", :method => :delete, :remote => true, :class => 'in_link icon icon-del' ) %>
+                <%= link_to_function "<span>#{l(:button_edit)}</span>".html_safe, "projectsFormShow(#{principal.id})", :class => 'icon icon-edit' %>
+                <%= link_to("<span>#{l(:button_delete)}</span>".html_safe, "remove_user_from_role/#{principal.id}", :method => :delete, :remote => true, :class => 'in_link icon icon-del' ) %>
               </td>
             </tr>
-          <% render_principal = false %>
-          <% end %>
         <% end %>
         </tbody>
       </table>

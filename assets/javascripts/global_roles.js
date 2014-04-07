@@ -62,37 +62,34 @@ RMPlus.GlobalRoles = (function(my){
   return my;
 })(RMPlus.GlobalRoles || {});
 
-function projectsFormShow(member_id){
-  $('#member-'+member_id+'-project-link').hide();
-  var $member = $('#member-'+member_id);
-  var project_ids = $member.attr('data-project-ids');
+function projectsFormShow(principal_id){
+  $('#principal-'+principal_id+'-project-links').hide();
+  var $principal = $('#principal-'+principal_id+'-projects');
+
+
+  var project_ids = $principal.attr('data-project-ids');
 
   // trim [] from the string
   project_ids = project_ids.substring(1, project_ids.length-1).split(', ');
   // concatenate into jQuery selector to check projects already present
   project_ids_selector = project_ids.map(function(id){ return '#' + id;}).join(', ');
 
-  if ($member.find('input').length == 0){
-    RMPlus.GlobalRoles.$projectsForm.clone().appendTo($member);
+  if ($principal.find('input').length == 0){
+    RMPlus.GlobalRoles.$projectsForm.clone().appendTo($principal);
   }
-  $('#member-'+member_id+' form').show();
-  //else {
-//    $('#member-'+member_id+' form').show();
-//  }
+  $('#principal-'+principal_id+'-projects form').show();
 
-  $member.find('input').prop('checked', false);
-  $member.find(project_ids_selector).prop('checked', true);
+  $principal.find('input').prop('checked', false);
+  $principal.find(project_ids_selector).prop('checked', true);
 
-  var principal_id = $member.attr('data-principal-id');
-
-  $member.find('#edit_user_projects_by_role_principal_id').val('');
-  $member.find('#edit_user_projects_by_role_principal_id').val(principal_id);
-  $member.find('#projects-form-cancel').attr('data-member-id', member_id);
+  $principal.find('#edit_user_projects_by_role_principal_id').val('');
+  $principal.find('#edit_user_projects_by_role_principal_id').val(principal_id);
+  $principal.find('#projects-form-cancel').attr('data-principal-id', principal_id);
 }
 
-function projectsFormCancel(member_id){
-  $('#member-'+member_id+'-project-link').show();
-  $('#member-'+member_id+' form').hide();
+function projectsFormCancel(principal_id){
+  $('#principal-'+principal_id+'-project-links').show();
+  $('#principal-'+principal_id+' form').hide();
 }
 
 $(document).ready(function(){
@@ -120,9 +117,9 @@ $(document).ready(function(){
 
   $('body').on("click", function (event){
     if (event.target.id === "projects-form-cancel"){
-      var member_id = event.target.getAttribute('data-member-id');
-      $('#member-'+member_id+'-project-link').show();
-      $('#member-'+member_id+' form').hide();
+      var principal_id = event.target.getAttribute('data-principal-id');
+      $('#principal-'+principal_id+'-project-links').show();
+      $('#principal-'+principal_id+'-projects form').hide();
     }
   });
 

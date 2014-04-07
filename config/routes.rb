@@ -21,7 +21,7 @@ RedmineApp::Application.routes.draw do
   get 'roles/:id/show_users_by_role', :controller => 'roles', :action => 'show_users_by_role', :id => /\d+/
   post 'roles/:id/add_user_to_role', :controller => 'roles', :action => 'add_user_to_role', :id => /\d+/
   put 'roles/:id/edit_user_projects_by_role', :controller => 'roles', :action => 'edit_user_projects_by_role', :id => /\d+/
-  delete 'roles/:id/remove_user_from_role/:member_id', :controller => 'roles', :action => 'remove_user_from_role', :id => /\d+/, :member_id => /\d+/
+  delete 'roles/:id/remove_user_from_role/:user_id', :controller => 'roles', :action => 'remove_user_from_role', :id => /\d+/, :user_id => /\d+/
 
 end
 
