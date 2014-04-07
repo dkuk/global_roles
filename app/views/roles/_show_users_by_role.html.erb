@@ -1,4 +1,4 @@
-<% @role_principals = role.principals %>
+<% @role_principals = @role.principals %>
 <% @other_role_principals = Principal.active.includes(:projects, :memberships) - @role_principals %>
 <% @projects = Project.active.all %>
 
@@ -55,7 +55,7 @@
   </div>
 
   <div class="I">
-    <%= form_tag({:controller => 'roles', :action => 'edit_user_projects_by_role', :id => role.id}, {:method => :put, :remote => true, :id => "member-projects-form"}) do %>
+    <%= form_tag({:controller => 'roles', :action => 'edit_user_projects_by_role', :id => @role.id}, {:method => :put, :remote => true, :id => "member-projects-form"}) do %>
       <p>
         <% @projects.each do |project| %>
         <label><%= check_box_tag 'membership[project_ids][]', project.id, false, :id => project.id %>
@@ -79,9 +79,9 @@
         <p><%= projects_select_tag('project_id', @projects) %></p>
 
         <strong> <%= l(:label_user) %> / <%= l(:label_group) %> </strong>
-        <p><%= text_field_tag('filter_users', '', :class => 'find-filter autocomplete', :data => {:url => autocomplete_for_user_role_path(role)}) %></p>
+        <p><%= text_field_tag('filter_users', '', :class => 'find-filter autocomplete', :data => {:url => autocomplete_for_user_role_path(@role)}) %></p>
         <div id="users-list" class="glr-list-container">
-            <%= render_principals_for_role(role) %>
+            <%= render_principals_for_role(@role) %>
         </div>
         <div class="glr-submit">
           <%= submit_tag(l(:label_add_item), :id => 'add_user_to_role', :class => 'btn-def', :disabled => 'disabled') %>

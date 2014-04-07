@@ -49,39 +49,6 @@ RMPlus.Utils = (function(my) {
     };
   }
 
-  my.parseQueryParams = function(){
-    var queryDict = {};
-    location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]});
-    return queryDict;
-  }
-
-  my.getTabName = function(element){
-    var regexp = new RegExp("^[^-]*-");
-    return element.id.replace(regexp, '');
-  }
-
-  my.fetchData = function(){
-    var name = RMPlus.Utils.getTabName(this);
-    var replace = this.getAttribute('data-replace-url');
-
-    if (this.getAttribute('data-loaded') === 'false'){
-      var container = $('#tab-content-' + name);
-      container.addClass('glr-preloader');
-      var url = this.getAttribute('data-url');
-      $.get(url, $.proxy(function(data, statusTxt, xhr){
-        container.html(data);
-        container.removeClass('glr-preloader');
-        this.setAttribute('data-loaded', 'true');
-      }, this))
-      .fail(function(xhr, textStatus){
-        if (xhr.status != undefined && xhr.status.toString( ) == "0") { return; }
-        container.html('<div class="glr-ajax_error"></div><div class="glr-ajax_error_text">' + xhr.status + ": " + xhr.statusText + '<div>');
-        container.removeClass('glr-preloader');
-      });
-    }
-    showTab(name, this.href, replace);
-  }
-
   return my;
 })(RMPlus.Utils || {});
 

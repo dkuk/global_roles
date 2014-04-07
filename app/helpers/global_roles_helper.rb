@@ -18,13 +18,9 @@ module GlobalRolesHelper
 
   def roles_tabs
     tabs = [{:name => 'roles_edit', :partial => 'roles/edit_tab', :label => :label_permissions},
-            {:name => 'users_by_global_role', :label => :label_users_by_global_role, :url => url_for(controller: 'roles', action: 'show_users_by_global_role')},
-            {:name => 'users_by_role', :label => :label_users_by_role, :url => url_for(controller: 'roles', action: 'show_users_by_role')}
+            {:name => 'users_by_global_role', :partial => 'roles/show_users_by_global_role', :label => :label_users_by_global_role},
+            {:name => 'users_by_role', :partial => 'roles/show_users_by_role', :label => :label_users_by_role}
            ]
-    class << tabs
-      attr_accessor :ajax
-    end
-    tabs.ajax = true
     return tabs
   end
 
