@@ -12,7 +12,7 @@ $.expr[':'].Contains = function(elem, index, match) {
 // Namespace declaration
 var RMPlus = (function (my) {
   return my;
-}(RMPlus || {}));
+})(RMPlus || {});
 
 // Useful utility functions
 RMPlus.Utils = (function(my) {
