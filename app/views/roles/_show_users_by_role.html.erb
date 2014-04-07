@@ -17,7 +17,7 @@
         </thead>
         <tbody>
         <% @role_principals.each do |principal| %>
-          <% principal_project_ids = principal.memberships.map{|member| member.try(:project).id} %>
+          <% principal_project_ids = principal.memberships.select{|member| member.roles.include?(@role)}.map{|member| member.try(:project).id} %>
             <tr id="principal-<%= principal.id %>" class="<%= cycle 'odd', 'even' %>">
               <% group_class = principal.instance_of?(Group) ? "glr-group" : "" %>
               <td class="principal-name <%= group_class %>">
@@ -31,8 +31,7 @@
                                         data-principal-id="<%= principal.id %>">
 
               <span id="principal-<%= principal.id %>-project-links">
-              <%= principal.memberships.map{|member| link_to_project_settings(member.project, {}, :id => "member-#{member.id}-project-link",
-                                                                                                  :title => member.project.short_description)}.join(', ').html_safe %>
+              <%= principal.memberships.select{|member| member.roles.include?(@role)}.map{|member| link_to_project_settings(member.project, {}, :id => "member-#{member.id}-project-link", :title => member.project.short_description)}.join(', ').html_safe %>
               </span>
               </td>
               <td class="buttons">

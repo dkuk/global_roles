@@ -73,20 +73,21 @@ module GlobalRoles
 
       def add_user_to_role
         @principal_ids = params[:principals] || []
-        @member_ids = []
+        project_id = params[:project_id] || 0
+        @edited_principal_ids = []
 
         if @principal_ids.is_a?(Array)
           @principal_ids.each do |principal_id|
-            member = Member.find_or_new(params[:project_id], principal_id)
+            member = Member.find_or_new(params[:project_id], principal_id.to_i)
             if !member.roles.include?(@role)
               member.roles << @role
+              @edited_principal_ids << principal_id
             end
             member.save
-            @member_ids << member.id
+
           end
         end
-        logger.debug("member_ids=#{@member_ids}")
-        logger.debug("principal_ids=#{@principal_ids}")
+        logger.debug("@edited_principal_ids=#{@edited_principal_ids}")
 
         respond_to do |format|
           format.html { redirect_to :controller => 'roles', :action => 'edit', :tab => 'users_by_role'}
@@ -100,7 +101,7 @@ module GlobalRoles
             @principal_id = params[:membership][:principal_id]
             project_ids = params[:membership][:project_ids] || []
 
-            if (project_ids.instance_of?(Array) && project_ids.any?)
+            if (project_ids.any?)
               member_roles = MemberRole.joins(:member).where('members.project_id NOT IN (?)', project_ids)
                                                       .where(:role_id => @role.id, :members => {:user_id => @principal_id})
             else
