@@ -10,20 +10,6 @@ $.expr[':'].Contains = function(elem, index, match) {
   return jQuery(elem).text().toUpperCase().indexOf(match[3].toUpperCase()) >= 0;
 };
 
-function showTab(name, url) {
-  $('div#content .tab-content').hide();
-  $('div.tabs a').removeClass('selected');
-  $('#tab-content-' + name).show();
-  $('#tab-' + name).addClass('selected');
-
-  if (window.History && window.History.enabled){
-    window.History.pushState(null, name, url);
-  }
-
-  return false;
-}
-
-
 // Namespace declaration
 var RMPlus = (function (my) {
   return my;
@@ -63,22 +49,37 @@ RMPlus.Utils = (function(my) {
     };
   }
 
-  my.showTab = function(name, a) {
-    $('div#content .tab-content').hide();
-    $('div.tabs a').removeClass('selected');
-    $('#tab-content-' + name).show();
-    $('#tab-' + name).addClass('selected');
-    if ("replaceState" in window.history) {
-      window.history.replaceState(null, $(a).first().text(), a.href);
-    }
-    a.blur();
-    return false;
-  }
-
   my.parseQueryParams = function(){
     var queryDict = {};
     location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]});
     return queryDict;
+  }
+
+  my.getTabName = function(element){
+    var regexp = new RegExp("^[^-]*-");
+    return element.id.replace(regexp, '');
+  }
+
+  my.fetchData = function(){
+    var name = RMPlus.Utils.getTabName(this);
+    var replace = this.getAttribute('data-replace-url');
+
+    if (this.getAttribute('data-loaded') === 'false'){
+      var container = $('#tab-content-' + name);
+      container.addClass('glr-preloader');
+      var url = this.getAttribute('data-url');
+      $.get(url, $.proxy(function(data, statusTxt, xhr){
+        container.html(data);
+        container.removeClass('glr-preloader');
+        this.setAttribute('data-loaded', 'true');
+      }, this))
+      .fail(function(xhr, textStatus){
+        if (xhr.status != undefined && xhr.status.toString( ) == "0") { return; }
+        container.html('<div class="glr-ajax_error"></div><div class="glr-ajax_error_text">' + xhr.status + ": " + xhr.statusText + '<div>');
+        container.removeClass('glr-preloader');
+      });
+    }
+    showTab(name, this.href, replace);
   }
 
   return my;
@@ -90,26 +91,6 @@ RMPlus.GlobalRoles = (function(my){
 
   // variable to hold jQuery object of the form for editing projects by user
   my.$projectsForm = {};
-
-  my.fetchData = function(){
-    var name = this.getAttribute('data-name');
-    if (this.getAttribute('data-loaded') === 'false'){
-        var container = $('#tab-content-' + name);
-        container.addClass('glr-preloader');
-        var url = this.getAttribute('data-url');
-        $.get(url, $.proxy(function(data, statusTxt, xhr){
-          container.html(data);
-          container.removeClass('glr-preloader');
-          this.setAttribute('data-loaded', 'true');
-        }, this))
-        .fail(function(xhr, textStatus){
-          if (xhr.status != undefined && xhr.status.toString( ) == "0") { return; }
-          container.html('<div class="glr-ajax_error"></div><div class="glr-ajax_error_text">' + xhr.status + ": " + xhr.statusText + '<div>');
-          container.removeClass('glr-preloader');
-        });
-      }
-      showTab(name, this.href);
-  }
 
   return my;
 })(RMPlus.GlobalRoles || {});
@@ -136,7 +117,7 @@ function projectsFormShow(member_id){
 
   var principal_id = $member.attr('data-principal-id');
 
-  $member.find('#edit_user_projects_by_role_principal_id').val("");
+  $member.find('#edit_user_projects_by_role_principal_id').val('');
   $member.find('#edit_user_projects_by_role_principal_id').val(principal_id);
   $member.find('#projects-form-cancel').attr('data-member-id', member_id);
 }
@@ -145,8 +126,6 @@ function projectsFormCancel(member_id){
   $('#member-'+member_id+'-project-link').show();
   $('#member-'+member_id+' form').hide();
 }
-
-
 
 $(document).ready(function(){
 
@@ -158,41 +137,6 @@ $(document).ready(function(){
   var edit_partial = $('form.edit_role')[0].outerHTML;
   $('form.edit_role').remove();
   $('div#tab-content-roles_edit').html(edit_partial);
-
-  var History = window.History; // Note: We are using a capital H instead of a lower h
-  if ( !History.enabled ) {
-    return false;
-  }
-  else {
-    // Bind to StateChange Event
-    History.Adapter.bind(window,'statechange',function() { // Note: We are using statechange instead of popstate
-      var State = History.getState();
-      var params = RMPlus.Utils.parseQueryParams();
-      var selected = params.tab || '';
-      console.log(params);
-
-      var selected_tab = $('#tab-'+selected).get(0);
-      RMPlus.GlobalRoles.fetchData.apply(selected_tab);
-      console.log(State.url);
-    });
-  }
-
-
-
-  // override redmine onclick handlers with jQuery event handlers
-  var regexp = new RegExp("^[^-]*-");
-  $('div.tabs a').each(function(){
-    var old_onclick = this.onclick;
-    $(this).removeAttr('onclick');
-    this.setAttribute('data-name', this.id.replace(regexp, ''));
-    $(this).on("click", function(event){
-      RMPlus.GlobalRoles.fetchData.apply(this);
-      event.preventDefault();
-    });
-  });
-  var selected_tab = $('div.tabs a.selected').get(0);
-  RMPlus.GlobalRoles.fetchData.apply(selected_tab);
-
 
 
   function FetchUsers(){

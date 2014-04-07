@@ -3,7 +3,7 @@
   <% tabs.each do |tab| -%>
     <% html_options = {:id => "tab-#{tab[:name]}",
                        :class => (tab[:name] != selected_tab ? nil : 'selected'),
-                       :onclick => "showTab('#{tab[:name]}', this.href); this.blur(); return false;"} %>
+                       :onclick => "RMPlus.Utils.fetchData.apply(this); this.blur(); return false;"} %>
     <% html_options[:data] = {:url => tab[:url], :loaded => false} if !tab[:url].nil? %>
     <li><%= link_to l(tab[:label]), {:tab => tab[:name] }, html_options %></li>
   <% end -%>

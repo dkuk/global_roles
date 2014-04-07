@@ -13,7 +13,8 @@ module GlobalRoles
     end
 
     module InstanceMethods
-      def render_tabs_with_ajax(tabs, selected=params[:tab])
+      def render_tabs_with_ajax(tabs, selected=nil)
+        html = ''
         if tabs.respond_to?(:ajax)
           if (tabs.ajax)
             if (tabs.any?)
@@ -21,14 +22,23 @@ module GlobalRoles
                 selected = nil
               end
               selected ||= tabs.first[:name]
-              render :partial => 'roles/tabs', :locals => {:tabs => tabs, :selected_tab => selected}
+              html << render(:partial => 'common/ajax_tabs', :locals => {:tabs => tabs, :selected_tab => selected}).to_s
             else
-              content_tag 'p', l(:label_no_data), :class => "nodata"
+              html << content_tag('p', l(:label_no_data), :class => "nodata").to_s
             end
           else
-            render_tabs_without_ajax(tabs, selected)
+            html << render_tabs_without_ajax(tabs, selected).to_s
           end
+        else
+          html << render_tabs_without_ajax(tabs, selected).to_s
         end
+
+        html << '<script type="text/javascript">'
+        html << "element = $('div.tabs a.selected').get(0);"
+        html << "console.log(element);"
+        html << "RMPlus.Utils.fetchData.apply(element);delete element;"
+        html << '</script>'
+        html.html_safe
       end
     end
 
