@@ -1,4 +1,4 @@
-$('#tab-content-users_by_role').html('<%= escape_javascript(render :partial => 'roles/show_users_by_role', :locals => {:role => @role}) %>');
+$('#tab-content-users_by_role').html('<%= escape_javascript(render :partial => 'roles/show_users_by_role') %>');
 var member_ids = '<%= @member_ids %>' || [];
 member_ids = member_ids.substring(1, member_ids.length-1).split(", ");
 var selector = $.map(member_ids, function(element, index){ return '#member-' + element }).join(', ');

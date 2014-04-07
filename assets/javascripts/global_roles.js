@@ -75,9 +75,10 @@ function projectsFormShow(member_id){
   if ($member.find('input').length == 0){
     RMPlus.GlobalRoles.$projectsForm.clone().appendTo($member);
   }
-  else {
-    $('#member-'+member_id+' form').show();
-  }
+  $('#member-'+member_id+' form').show();
+  //else {
+//    $('#member-'+member_id+' form').show();
+//  }
 
   $member.find('input').prop('checked', false);
   $member.find(project_ids_selector).prop('checked', true);
@@ -105,6 +106,7 @@ $(document).ready(function(){
   $('form.edit_role').remove();
   $('div#tab-content-roles_edit').html(edit_partial);
 
+  RMPlus.GlobalRoles.$projectsForm = $('#member-projects-form');
 
   function FetchUsers(){
     $.ajax({url: $('#filter_users').attr('data-url'),
