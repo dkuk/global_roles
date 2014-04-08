@@ -131,24 +131,6 @@ $(document).ready(function(){
     }
   });
 
-  $('body').on('change', '#project_id', function(){
-    $this = $(this);
-    var $submit_button = $('#add_user_to_role');
-    var value = $this.val();
-    var old_value = $this.attr('data-value-was');
-    if (value !== old_value){
-      if (value !== ''){
-        $('.glr-no-project-selected').hide();
-      }
-      $this.attr('data-value-was', value);
-      var selector = $('#principals input:checked').map(function(){ return '#' + $(this).val() }).get().join(', ');
-      $users_list = $('#users-list');
-      $('#users-list').attr('data-checkbox-selector', selector);
-      data = { project_id: $('#project_id').val(), user_name: $('#filter_users').val().trim() };
-      RMPlus.GlobalRoles.FetchUsers(this, data);
-    }
-  });
-
   $('body').on("change keyup input", '#filter_users', RMPlus.Utils.debounce(250, function(event){
     $this = $(this);
     var value = $this.val().trim();

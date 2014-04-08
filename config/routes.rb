@@ -11,7 +11,6 @@ RedmineApp::Application.routes.draw do
    resources :roles do
      member do
        get 'autocomplete_for_user'
-       get 'autocomplete_for_user_global'
      end
    end
 
