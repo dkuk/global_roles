@@ -59,6 +59,16 @@ RMPlus.GlobalRoles = (function(my){
   // variable to hold jQuery object of the form for editing projects by user
   my.$projectsForm = {};
 
+  my.FetchUsers = function(element, data){
+    $.ajax({url: $(element).attr('data-url'),
+           type: 'get',
+           data: data,
+           success: function(data){},
+           beforeSend: function(){ $(element).addClass('ajax-loading'); },
+           complete: function(){ $(element).removeClass('ajax-loading'); }
+    });
+  }
+
   return my;
 })(RMPlus.GlobalRoles || {});
 
@@ -105,16 +115,6 @@ $(document).ready(function(){
 
   RMPlus.GlobalRoles.$projectsForm = $('#member-projects-form');
 
-  function FetchUsers(){
-    $.ajax({url: $('#filter_users').attr('data-url'),
-            type: 'get',
-            data: {project_id: $('#project_id').val(), user_name: $('#filter_users').val().trim()},
-            success: function(data){},
-            beforeSend: function(){ $this.addClass('ajax-loading'); },
-            complete: function(){ $this.removeClass('ajax-loading'); }
-          });
-  }
-
   $('body').on("click", function (event){
     if (event.target.id === "projects-form-cancel"){
       var principal_id = event.target.getAttribute('data-principal-id');
@@ -123,25 +123,29 @@ $(document).ready(function(){
     }
   });
 
+  $('#add_user_to_role').on("click", function(event){
+    var value = $('#project_id').val();
+    if (value === '') {
+      event.preventDefault();
+      $('.glr-no-project-selected').show();
+    }
+  });
+
   $('body').on('change', '#project_id', function(){
     $this = $(this);
     var $submit_button = $('#add_user_to_role');
     var value = $this.val();
     var old_value = $this.attr('data-value-was');
-    if (value === '') {
-      $submit_button.attr('disabled', 'disabled');
-      $('.glr-no-project-selected').show();
-    }
-    if (value !== '') {
-      $submit_button.removeAttr('disabled');
-      $('.glr-no-project-selected').hide();
-    }
-
     if (value !== old_value){
+      if (value !== ''){
+        $('.glr-no-project-selected').hide();
+      }
       $this.attr('data-value-was', value);
       var selector = $('#principals input:checked').map(function(){ return '#' + $(this).val() }).get().join(', ');
+      $users_list = $('#users-list');
       $('#users-list').attr('data-checkbox-selector', selector);
-      FetchUsers();
+      data = { project_id: $('#project_id').val(), user_name: $('#filter_users').val().trim() };
+      RMPlus.GlobalRoles.FetchUsers(this, data);
     }
   });
 
@@ -158,12 +162,13 @@ $(document).ready(function(){
     }
 
     if (value != old_value){
-      $this.attr('data-value-was', value)
-      FetchUsers();
+      $this.attr('data-value-was', value);
+      data = { project_id: $('#project_id').val(), user_name: value };
+      RMPlus.GlobalRoles.FetchUsers(this, data);
     }
   }));
 
-  $('#filter_roles').on("change keyup input", function(){
+  $('body').on("change keyup input", '#filter_roles', function(){
     var value = $(this).val().trim();
     if (value == ""){
       $('#roles-list label.one-name').show();
@@ -174,8 +179,10 @@ $(document).ready(function(){
     }
   });
 
-  $('#filter_users_global_roles').on("change keyup input", function(){
-    var value = $(this).val().trim();
+  $('body').on("change keyup input", '#filter_users_global_roles', RMPlus.Utils.debounce(250, function(){
+    var $this = $(this);
+    var value = $this.val().trim();
+    var old_value = $this.attr('data-value-was');
     if (value == ""){
       $('#users-list-global-roles label.one-name').show();
     }
@@ -183,6 +190,11 @@ $(document).ready(function(){
       $('#users-list-global-roles label.one-name').hide();
       $('#users-list-global-roles label.one-name:Contains('+value+')').show();
     }
-  });
+    if (value != old_value){
+      $this.attr('data-value-was', value);
+      data = { user_name: value };
+      RMPlus.GlobalRoles.FetchUsers(this, data);
+    }
+  }));
 
 });

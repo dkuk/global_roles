@@ -1,0 +1,3 @@
+$('#users-list-global-roles').html('<%= escape_javascript(render_principals_for_role(@role)) %>');
+var selector = $('#users-list-global-roles').attr('data-checkbox-selector');
+$(selector).prop('checked', 'checked');

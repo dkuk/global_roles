@@ -8,11 +8,12 @@ RedmineApp::Application.routes.draw do
   post 'users/:id/create_global_role', :controller => 'users', :action => 'create_global_role', :id => /\d+/
   delete 'users/:id/destroy_global_role/:rid', :controller => 'users', :action => 'destroy_global_role', :id => /\d+/, :rid => /\d+/
 
-  resources :roles do
-    member do
-      get 'autocomplete_for_user'
-    end
-  end
+   resources :roles do
+     member do
+       get 'autocomplete_for_user'
+       get 'autocomplete_for_user_global'
+     end
+   end
 
   get 'roles/:id/show_users_by_global_role', :controller => 'roles', :action => 'show_users_by_global_role', :id => /\d+/
   post 'roles/:id/create_global_role', :controller => 'roles', :action => 'create_global_role', :id => /\d+/

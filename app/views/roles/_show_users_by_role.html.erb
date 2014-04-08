@@ -35,7 +35,7 @@
               </span>
               </td>
               <td class="buttons">
-                <%= link_to_function "<span>#{l(:button_edit)}</span>".html_safe, "projectsFormShow(#{principal.id})", :class => 'icon icon-edit' %>
+                <%= link_to_function "<span>#{l(:button_edit)}</span>".html_safe, "projectsFormShow(#{principal.id})", :class => 'in_link icon icon-edit' %>
                 <%= link_to("<span>#{l(:button_delete)}</span>".html_safe, "remove_user_from_role/#{principal.id}", :method => :delete, :remote => true, :class => 'in_link icon icon-del' ) %>
               </td>
             </tr>
@@ -77,8 +77,8 @@
             <%= render_principals_for_role(@role) %>
         </div>
         <div class="glr-submit">
-          <%= submit_tag(l(:label_add_item), :id => 'add_user_to_role', :class => 'btn-def', :disabled => 'disabled') %>
-          <div class="glr-no-project-selected"><%= l(:label_no_project_selected) %></div>
+          <%= submit_tag(l(:label_add_item), :id => 'add_user_to_role') %>
+          <div class="glr-no-project-selected" style="display: none;"><%= l(:label_no_project_selected) %></div>
         </div>
       </fieldset>
     <% end %>

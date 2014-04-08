@@ -63,10 +63,23 @@ module GlobalRolesHelper
     s + content_tag('p', links, :class => 'pagination')
   end
 
-  def render_principals_for_global_role(principals)
-    other_principals = Principal.active - principals
-    other_principals = other_principals.sort_by{|el| [el.type, el.lastname.to_s]}
-    s = content_tag(:div, principals_for_role_checkbox_tags('principals[]', other_principals), :id => 'principals')
+  def render_principals_for_global_role(role)
+    principals = Principal.active.where("#{Principal.table_name}.id NOT IN
+                                              (SELECT #{GlobalRole.table_name}.user_id FROM #{GlobalRole.table_name}
+                                               WHERE #{GlobalRole.table_name}.role_id = ?)", role.id)
+                                       .like(params[:user_name]).order(:type, :lastname)
+
+    principal_count = principals.count
+    principal_pages = Redmine::Pagination::Paginator.new principal_count, 100, params[:page]
+    principals = principals.offset(principal_pages.offset).limit(principal_pages.per_page).all
+
+    s = content_tag(:div, principals_for_role_checkbox_tags('principals[]', principals), :id => 'principals')
+
+    links = pagination_links_full(principal_pages, principal_count, :per_page_links => false) {|text, parameters, options|
+      link_to text, autocomplete_for_user_global_role_path(principals, parameters.merge(:user_name => params[:user_name], :format => 'js')), :remote => true
+    }
+
+    s + content_tag('p', links, :class => 'pagination')
   end
 
 end
