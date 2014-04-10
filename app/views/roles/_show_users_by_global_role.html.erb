@@ -15,7 +15,7 @@
         </thead>
         <tbody>
         <% @principals.each do |principal| %>
-          <% global_role = @global_roles.where(user_id: principal.id).first %>
+          <% global_role = @global_roles.find{|role| role.user_id = principal.id} %>
           <tr id="principal-<%= principal.id %>" class="<%= cycle 'odd', 'even' %>">
           <% group_class = principal.instance_of?(Group) ? "glr-group" : "" %>
             <td class="principal-name <%= group_class %>">
