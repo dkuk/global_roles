@@ -1,11 +1,8 @@
-<% @principals = @role.principals_by_global_roles %>
-<% @global_roles = @role.global_roles %>
-
 <%= content_tag(:div, js_err, :id => "errorExplanation") if local_assigns[:js_err] && !js_err.nil? %>
 
 <div>
   <div class="splitcontentleft" style="width:65%;">
-    <% if @principals != [] %>
+    <% if @role.principals_by_global_roles != [] %>
       <table class="list relations">
         <thead>
           <tr>
@@ -14,8 +11,8 @@
           </tr>
         </thead>
         <tbody>
-        <% @principals.each do |principal| %>
-          <% global_role = @global_roles.find{|role| role.user_id = principal.id} %>
+        <% @role.principals_by_global_roles.each do |principal| %>
+          <% global_role = @role.global_roles.find{|global_role| global_role.user_id = principal.id} %>
           <tr id="principal-<%= principal.id %>" class="<%= cycle 'odd', 'even' %>">
           <% group_class = principal.instance_of?(Group) ? "glr-group" : "" %>
             <td class="principal-name <%= group_class %>">

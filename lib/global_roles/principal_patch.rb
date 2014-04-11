@@ -5,6 +5,8 @@ module GlobalRoles
       base.send(:include, InstanceMethods)
 
       base.class_eval do
+        belongs_to :role
+
         scope :with_projects_and_memberships, lambda {
           includes(:projects, :memberships)
           .joins("INNER JOIN #{Member.table_name} ON #{Member.table_name}.user_id = #{Principal.table_name}.id

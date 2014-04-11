@@ -1,12 +1,11 @@
-<% @role_principals = @role.principals %>
-<% @other_role_principals = Principal.active.includes(:projects, :memberships) - @role_principals %>
-<% @projects = Project.active.all %>
+<% other_role_principals = Principal.active.includes(:projects, :memberships) - @role.principals %>
+<% projects = Project.active.all %>
 
 <%= content_tag(:div, js_err, :id => "errorExplanation") if local_assigns[:js_err] && !js_err.nil? %>
 
 <div>
   <div class="splitcontentleft" style="width:65%;">
-    <% if @role_principals != [] %>
+    <% if @role.principals != [] %>
       <table class="list relations">
         <thead>
           <tr>
@@ -16,7 +15,7 @@
           </tr>
         </thead>
         <tbody>
-        <% @role_principals.each do |principal| %>
+        <% @role.principals.each do |principal| %>
           <% principal_project_ids = principal.memberships.select{|member| member.roles.include?(@role)}.map{|member| member.try(:project).id} %>
             <tr id="principal-<%= principal.id %>" class="<%= cycle 'odd', 'even' %>">
               <% group_class = principal.instance_of?(Group) ? "glr-group" : "" %>
@@ -50,7 +49,7 @@
   <div class="I">
     <%= form_tag({:controller => 'roles', :action => 'edit_user_projects_by_role', :id => @role.id}, {:method => :put, :remote => true, :id => "member-projects-form"}) do %>
       <p>
-        <% @projects.each do |project| %>
+        <% projects.each do |project| %>
         <label><%= check_box_tag 'membership[project_ids][]', project.id, false, :id => project.id %>
           <%=h project %>
         </label><br />
@@ -69,7 +68,7 @@
         <legend><strong> <%= l(:label_add_user_to_role) %> </strong></legend>
         </br>
         <strong><%= l(:label_project) %></strong>
-        <p><%= projects_select_tag('project_id', @projects) %></p>
+        <p><%= projects_select_tag('project_id', projects) %></p>
 
         <strong> <%= l(:label_user) %> / <%= l(:label_group) %> </strong>
         <p><%= text_field_tag('filter_users', '', :class => 'find-filter autocomplete', :data => {:url => autocomplete_for_user_role_path(@role)}) %></p>
