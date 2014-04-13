@@ -9,6 +9,8 @@ module GlobalRoles
         helper GlobalRolesHelper
 
         before_filter :role_finder, :only => self::InstanceMethods.instance_methods(false)
+        before_filter :active_projects, :only => [:edit, :edit_user_projects_by_role, :show_users_by_role, :add_user_to_role,
+                                                  :remove_user_from_role, :autocomplete_for_user]
       end
     end
 
@@ -20,12 +22,16 @@ module GlobalRoles
         @role = Role.find(params[:id])
       end
 
+      def active_projects
+        @projects = Project.active.all
+      end
+
       def show_users_by_role
-        render :partial => 'roles/show_users_by_role', :locals => {:role => @role}
+        render :partial => 'roles/show_users_by_role'
       end
 
       def show_users_by_global_role
-        render :partial => 'roles/show_users_by_global_role', :locals => {:role => @role}
+        render :partial => 'roles/show_users_by_global_role'
       end
 
       def autocomplete_for_user

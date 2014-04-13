@@ -7,6 +7,12 @@ module GlobalRoles
       base.class_eval do
         has_many :global_roles, :dependent => :destroy
         has_many :principals_by_global_roles, :through => :global_roles, :source => :principal
+        has_many :users, :through => :members,
+                 :include => [:projects, :memberships],
+                 :conditions => ["#{Principal.table_name}.status = #{Principal::STATUS_ACTIVE}",
+                                 "#{Project.table_name}.status = #{Project::STATUS_ACTIVE}"],
+                 :uniq => true,
+                 :order => "#{Principal.table_name}.type, #{Principal.table_name}.lastname"
       end
     end
 
@@ -14,13 +20,6 @@ module GlobalRoles
     end
 
     module InstanceMethods
-      def principals
-        principals = Principal.active.with_projects_and_memberships
-                              .where(projects: {id: Project.active.all.map(&:id)}, member_roles: {role_id: self.id})
-                              .uniq.order(:type, :lastname)
-
-      end
-
     end
 
   end
