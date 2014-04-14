@@ -2,7 +2,7 @@
 
 <div>
   <div class="splitcontentleft" style="width:65%;">
-    <% if @role.users != [] %>
+    <% if @role.principals != [] %>
       <table class="list relations">
         <thead>
           <tr>
@@ -12,7 +12,7 @@
           </tr>
         </thead>
         <tbody>
-        <% @role.users.each do |principal| %>
+        <% @role.principals.each do |principal| %>
           <% principal_project_ids = principal.memberships.select{|member| member.roles.include?(@role)}.map{|member| member.try(:project).id} %>
             <tr id="principal-<%= principal.id %>" class="<%= cycle 'odd', 'even' %>">
               <% group_class = principal.instance_of?(Group) ? "glr-group" : "" %>
