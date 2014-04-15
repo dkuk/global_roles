@@ -10,7 +10,6 @@ end
 require 'global_roles/view_hooks'
 
 Rails.application.config.to_prepare do
-  Principal.send(:include, GlobalRoles::PrincipalPatch)
   User.send(:include, GlobalRoles::UserPatch)
   Group.send(:include, GlobalRoles::GroupPatch)
   UsersHelper.send(:include, GlobalRoles::UsersHelperPatch)
