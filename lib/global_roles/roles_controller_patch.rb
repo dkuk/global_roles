@@ -80,13 +80,11 @@ module GlobalRoles
 
         if @principal_ids.is_a?(Array)
           @principal_ids.each do |principal_id|
-            member = Member.first_or_initialize(params[:project_id], principal_id.to_i)
+            member = Member.find_or_new(params[:project_id], principal_id.to_i)
             if !member.roles.include?(@role)
               member.roles << @role
               @edited_principal_ids << principal_id
             end
-            member.save
-
           end
         end
 
@@ -111,9 +109,8 @@ module GlobalRoles
             member_roles.destroy_all
 
             project_ids.each do |project_id|
-              member = Member.first_or_initialize(project_id, @principal_id)
+              member = Member.find_or_new(project_id, @principal_id)
               member.member_roles << MemberRole.new(:role_id => @role.id, :member_id => member.id)
-              member.save
             end
           end
         end
