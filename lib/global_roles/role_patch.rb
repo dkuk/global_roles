@@ -6,7 +6,9 @@ module GlobalRoles
 
       base.class_eval do
         has_many :global_roles, :dependent => :destroy
-        has_many :principals_by_global_roles, :through => :global_roles, :source => :principal
+        has_many :principals_by_global_roles, :through => :global_roles,
+                 :source => :principal,
+                 :class_name => 'Principal'
         has_many :principals, :through => :members,
                  :include => [:projects, :memberships],
                  :conditions => ["#{Principal.table_name}.status = #{Principal::STATUS_ACTIVE}",
@@ -17,9 +19,11 @@ module GlobalRoles
     end
 
     module ClassMethods
+
     end
 
     module InstanceMethods
+
     end
 
   end

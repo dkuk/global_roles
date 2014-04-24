@@ -2,7 +2,8 @@
 
 <div>
   <div class="splitcontentleft" style="width:65%;">
-    <% if @role.principals_by_global_roles != [] %>
+  <% principals_by_global_roles = @role.principals_by_global_roles.with_global_role_id %>
+    <% if principals_by_global_roles != [] %>
       <table class="list relations">
         <thead>
           <tr>
@@ -11,8 +12,7 @@
           </tr>
         </thead>
         <tbody>
-        <% @role.principals_by_global_roles.each do |principal| %>
-          <% global_role = @role.global_roles.find{|global_role| global_role.user_id = principal.id} %>
+        <% principals_by_global_roles.each do |principal| %>
           <tr id="principal-<%= principal.id %>" class="<%= cycle 'odd', 'even' %>">
           <% group_class = principal.instance_of?(Group) ? "glr-group" : "" %>
             <td class="principal-name <%= group_class %>">
@@ -22,7 +22,7 @@
                 <%= link_to(principal.name, edit_group_path(principal)) %></td>
               <% end %>
             <td class="buttons">
-              <%= link_to("<span>#{l(:button_delete)}</span>".html_safe, "destroy_global_role/#{global_role.id}", :method => :delete, :remote => true, :class => "in_link icon icon-del" ) %>
+              <%= link_to("<span>#{l(:button_delete)}</span>".html_safe, "destroy_global_role/#{principal.attributes['gr_id']}", :method => :delete, :remote => true, :class => "in_link icon icon-del" ) %>
             </td>
           </tr>
         <% end %>
