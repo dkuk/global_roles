@@ -1,7 +1,6 @@
 module GlobalRoles
   module UserPatch
     def self.included(base)
-      base.extend(ClassMethods)
       base.send(:include, InstanceMethods)
 
       base.class_eval do
@@ -14,24 +13,21 @@ module GlobalRoles
       end
     end
 
-    module ClassMethods
-    end
-
     module InstanceMethods
 
-      def global_permission_to?(controller, action)
-        return true if admin?
+      def global_permission_to?(*args)
+        return true if (self.admin?)
 
-        roles = (global_roles + groups.collect {|gr| gr.global_roles}.flatten).uniq
+        roles = (self.global_roles + self.groups.collect { |gr| gr.global_roles }.flatten).uniq
         roles << Role.anonymous unless self.logged?
 
-        not roles.detect { |r|
-          r.allowed_to?({:controller => controller, :action => action})
-        }.nil?
-
+        case args.size
+          when 1
+            return !roles.detect { |r| r.allowed_to?(args.first) }.nil?
+          when 2
+            return !roles.detect { |r| r.allowed_to?({ controller: args.first, action: args.last }) }.nil?
+        end
       end
-
     end
-
   end
 end
