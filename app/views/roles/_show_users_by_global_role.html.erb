@@ -2,7 +2,7 @@
 
 <div>
   <div class="splitcontentleft" style="width:65%;">
-  <% principals_by_global_roles = @role.principals_by_global_roles.with_global_role_id %>
+  <% principals_by_global_roles = @role.principals_by_global_roles.select("#{Principal.table_name}.*, #{GlobalRole.table_name}.id AS gr_id") %>
     <% if principals_by_global_roles != [] %>
       <table class="list relations">
         <thead>
