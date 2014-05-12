@@ -17,7 +17,7 @@ module GlobalRoles
 
       def global_permission_to?(*args)
         return true if (self.admin?)
-        return global_permission_without_admin_to?(args)
+        return global_permission_without_admin_to?(*args)
       end
 
       def global_permission_without_admin_to?(*args)
