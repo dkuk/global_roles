@@ -17,7 +17,10 @@ module GlobalRoles
 
       def global_permission_to?(*args)
         return true if (self.admin?)
+        return global_permission_without_admin_to?(*args)
+      end
 
+      def global_permission_without_admin_to?(*args)
         roles = (self.global_roles + self.groups.collect { |gr| gr.global_roles }.flatten).uniq
         roles << Role.anonymous unless self.logged?
 
@@ -28,6 +31,7 @@ module GlobalRoles
             return !roles.detect { |r| r.allowed_to?({ controller: args.first, action: args.last }) }.nil?
         end
       end
+
     end
   end
 end
