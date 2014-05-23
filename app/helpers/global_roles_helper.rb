@@ -40,7 +40,7 @@ module GlobalRolesHelper
     html.html_safe
   end
 
-  def render_principals_for_role(role)
+  def render_principals_for_role(role, global = false)
     principals = Principal.active.like(params[:user_name]).order(:type, :lastname)
 
     principal_count = principals.count
@@ -49,9 +49,13 @@ module GlobalRolesHelper
 
     s = content_tag('div', principals_for_role_checkbox_tags('principals[]', principals), :id => 'principals')
 
-    links = pagination_links_full(principal_pages, principal_count, :per_page_links => false) {|text, parameters, options|
-      link_to text, autocomplete_for_user_role_path(role, parameters.merge(:user_name => params[:user_name], :format => 'js')), :remote => true
-    }
+    links = pagination_links_full(principal_pages, principal_count, :per_page_links => false) do |text, parameters, options|
+      if not global
+        link_to text, autocomplete_for_user_role_path(role, parameters.merge(:user_name => params[:user_name], :format => 'js')), :remote => true
+      else
+        link_to text, autocomplete_for_user_global_role_path(role, parameters.merge(:user_name => params[:user_name], :format => 'js')), :remote => true
+      end
+    end
 
     s + content_tag('p', links, :class => 'pagination')
   end
