@@ -40,6 +40,12 @@ module GlobalRoles
         end
       end
 
+      def autocomplete_for_user_global
+        respond_to do |format|
+          format.js
+        end
+      end
+
       def destroy_global_role
         global_role = GlobalRole.find(params[:gr_id])
         global_role.destroy

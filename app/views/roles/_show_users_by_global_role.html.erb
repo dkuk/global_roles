@@ -36,9 +36,9 @@
     <%= form_tag({:action => "create_global_role"},{:id =>'select_users', :remote => true}) do %>
       <fieldset>
         <legend><strong> <%= l(:label_user) %> / <%= l(:label_group) %> </strong></legend>
-        <p><%= text_field_tag('filter_users_global_roles', '', :class => 'find-filter autocomplete', :data => {:url => autocomplete_for_user_role_path(@role)}) %></p>
+        <p><%= text_field_tag('filter_users_global_roles', '', :class => 'find-filter autocomplete', :data => {:url => autocomplete_for_user_global_role_path(@role)}) %></p>
           <div id="users-list-global-roles" class="glr-list-container">
-            <%= render_principals_for_role(@role) %>
+            <%= render_principals_for_role(@role, true) %>
           </div>
         <p>
           <%= submit_tag(l(:label_add_item), :id => 'record_add') %>
