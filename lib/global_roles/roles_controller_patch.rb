@@ -70,8 +70,8 @@ module GlobalRoles
       end
 
       def remove_user_from_role
-        members = Member.includes(:member_roles).where(:user_id => params[:user_id], :member_roles => {:role_id => @role.id})
-        members.destroy_all
+        member_roles = MemberRole.joins(:members).where(role_id: @role.id, members: {user_id: params[:user_id]})
+        member_roles.destroy_all
 
         respond_to do |format|
           format.html { redirect_to :controller => 'roles', :action => 'edit', :tab => 'users_by_role' }
