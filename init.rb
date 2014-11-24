@@ -19,4 +19,5 @@ Rails.application.config.to_prepare do
   Role.send(:include, GlobalRoles::RolePatch)
   RolesController.send(:include, GlobalRoles::RolesControllerPatch)
   ApplicationController.send(:include, GlobalRoles::ApplicationControllerPatch)
+  MemberRole.send(:include, GlobalRoles::MemberRolePatch)
 end
