@@ -9,6 +9,7 @@ module GlobalRoles
     end
 
     module InstanceMethods
+      # REDMINE BUG
       def remove_member_if_empty_with_global_roles
         if self.member
           remove_member_if_empty_without_global_roles
