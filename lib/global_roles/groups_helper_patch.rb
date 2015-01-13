@@ -13,8 +13,12 @@ module GlobalRoles
     end
   
     module InstanceMethods 
-      def group_settings_tabs_with_global_roles
-        tabs = group_settings_tabs_without_global_roles
+      def group_settings_tabs_with_global_roles(*args)
+        if args.present?
+          tabs = group_settings_tabs_without_global_roles(args[0])
+        else
+          tabs = group_settings_tabs_without_global_roles()
+        end
         tabs.push({:name => 'groups-global-roles', :partial => 'roles/global_roles', :label => :label_global_roles})
         tabs
       end
