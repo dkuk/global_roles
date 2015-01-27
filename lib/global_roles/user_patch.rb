@@ -16,8 +16,7 @@ module GlobalRoles
     module InstanceMethods
 
       def global_permission_to?(*args)
-        return true if (self.admin?)
-        return global_permission_without_admin_to?(*args)
+        self.admin? || global_permission_without_admin_to?(*args)
       end
 
       def global_permission_without_admin_to?(*args)
