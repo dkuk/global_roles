@@ -1,11 +1,11 @@
-<%= javascript_include_tag :global_roles, :plugin => :global_roles %>
-<%= stylesheet_link_tag 'global_roles', :plugin => 'global_roles' %>
+<%= javascript_include_tag :global_roles, plugin: :global_roles %>
+<%= stylesheet_link_tag 'global_roles', plugin: 'global_roles' %>
 
-<%= content_tag(:div, js_err, :id => "errorExplanation") if local_assigns[:js_err] && !js_err.nil? %>
+<%= content_tag(:div, js_err, id: 'errorExplanation') if local_assigns[:js_err] && !js_err.nil? %>
 
 <div class="splitcontentleft" style="width:65%;">
   <% principal = @group.nil? ? @user : @group %>
-  <% principal_relations = GlobalRole.where('user_id=?', principal.id)  %>
+  <% principal_relations = GlobalRole.where(user_id: principal.id)  %>
   <% roles = Role.givable.where("#{Role.table_name}.id NOT IN (SELECT role_id FROM #{GlobalRole.table_name} WHERE user_id = ?)", principal.id) %>
 
   <% if principal_relations.any? %>
@@ -21,7 +21,7 @@
         <tr id="role-<%= rel.id %>" class="<%= cycle 'odd', 'even' %>">
           <td class="role-name"><%= link_to(rel.role.name, edit_role_path(rel.role)) %></td>
           <td class="buttons">
-            <%= delete_link( "destroy_global_role/#{rel.id}", :remote => true ) %>
+            <%= delete_link( "destroy_global_role/#{rel.id}", remote: true ) %>
           </td>
         </tr>
       <% end %>
@@ -34,18 +34,18 @@
 </div>
 
 <div class="splitcontentright" style="width:30%;">
-  <%= form_tag({:action => "create_global_role"},{:id =>'select_roles', :remote => true}) do %>
+  <%= form_tag({action: 'create_global_role'}, {id: 'select_roles', remote: true}) do %>
     <fieldset><legend><strong> <%= l(:label_roles) %> </strong></legend>
-      <p><%= text_field_tag('filter_roles', '', :class => 'find-filter') %></p>
-        <div id="roles-list" class="list-container">
+      <p><%= text_field_tag('filter_roles', '', class: 'find-filter') %></p>
+        <div id="roles-list" class="glr-list-container">
           <% roles.sort_by{|el| el.name.to_s}.each do |r| %>
             <nobr><%= content_tag( :label,
-                             check_box_tag("roles[]", r.id) + r.name.to_s,
-                             :class => "one-name" ) %></nobr>
+                                   check_box_tag('roles[]', r.id) + r.name.to_s,
+                                   class: 'one-name' ) %></nobr>
           <% end %>
         </div>
       <p>
-      <%= submit_tag(l(:label_add_item), :id => 'record_add', :class => 'btn-def') %>
+      <%= submit_tag(l(:label_add_item), id: 'record_add', class: 'btn-def') %>
       </p>
     </fieldset>
   <% end %>

@@ -17,7 +17,7 @@ module GlobalRoles
         @user = User.find(params[:id])
         GlobalRole.find(params[:rid]).destroy
         respond_to do |format|
-          format.html { redirect_to :controller => 'users', :action => 'edit', :tab => 'users-global-roles' }
+          format.html { redirect_to controller: 'users', action: 'edit', tab: 'users-global-roles' }
           format.js
         end
       end
@@ -28,13 +28,13 @@ module GlobalRoles
         @role_ids = params[:roles]
 
         if @role_ids.is_a?(Array)
-          @role_ids.each { |role_id| GlobalRole.create(:user_id => @user.id, :role_id => role_id ) }
+          @role_ids.each { |role_id| GlobalRole.create(user_id: @user.id, role_id: role_id) }
         end
 
-        @global_role_ids = GlobalRole.select(:id).where(:user_id => @user.id, :role_id => @role_ids).map(&:id)
+        @global_role_ids = GlobalRole.select(:id).where(user_id: @user.id, role_id: @role_ids).map(&:id)
 
         respond_to do |format|
-          format.html { redirect_to :controller => 'users', :action => 'edit', :tab => 'users-global-roles' }
+          format.html { redirect_to controller: 'users', action: 'edit', tab: 'users-global-roles' }
           format.js
         end
       end

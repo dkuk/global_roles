@@ -1,4 +1,4 @@
-<%= content_tag(:div, js_err, :id => "errorExplanation") if local_assigns[:js_err] && !js_err.nil? %>
+<%= content_tag(:div, js_err, id: 'errorExplanation') if local_assigns[:js_err] && !js_err.nil? %>
 
 <div>
   <div class="splitcontentleft" style="width:65%;">
@@ -14,7 +14,7 @@
         <tbody>
         <% principals_by_global_roles.each do |principal| %>
           <tr id="principal-<%= principal.id %>" class="<%= cycle 'odd', 'even' %>">
-          <% group_class = principal.instance_of?(Group) ? "glr-group" : "" %>
+          <% group_class = principal.instance_of?(Group) ? 'glr-group' : '' %>
             <td class="principal-name <%= group_class %>">
               <% if principal.instance_of?(User) %>
                 <%= link_to(principal.name, edit_user_path(principal)) %></td>
@@ -22,7 +22,11 @@
                 <%= link_to(principal.name, edit_group_path(principal)) %></td>
               <% end %>
             <td class="buttons">
-              <%= link_to("<span>#{l(:button_delete)}</span>".html_safe, "destroy_global_role/#{principal.attributes['gr_id']}", :method => :delete, :remote => true, :class => "in_link icon icon-del" ) %>
+              <%= link_to( "<span>#{l(:button_delete)}</span>".html_safe,
+                           "destroy_global_role/#{principal.attributes['gr_id']}",
+                           method: :delete,
+                           remote: true,
+                           class: 'in_link icon icon-del' ) %>
             </td>
           </tr>
         <% end %>
@@ -33,15 +37,16 @@
     <% end %>
   </div>
   <div class="splitcontentright" style="width:30%;">
-    <%= form_tag({:action => "create_global_role"},{:id =>'select_users', :remote => true}) do %>
+    <%= form_tag( {action: 'create_global_role'}, { id: 'select_users', remote: true} ) do %>
       <fieldset>
         <legend><strong> <%= l(:label_user) %> / <%= l(:label_group) %> </strong></legend>
-        <p><%= text_field_tag('filter_users_global_roles', '', :class => 'find-filter autocomplete', :data => {:url => autocomplete_for_user_global_role_path(@role)}) %></p>
+        <p><%= text_field_tag('filter_users_global_roles', '',
+                              class: 'find-filter autocomplete', data: {url: autocomplete_for_user_global_role_path(@role)}) %></p>
           <div id="users-list-global-roles" class="glr-list-container">
             <%= render_principals_for_role(@role, true) %>
           </div>
         <p>
-          <%= submit_tag(l(:label_add_item), :id => 'record_add') %>
+          <%= submit_tag(l(:label_add_item), id: 'record_add') %>
         </p>
       </fieldset>
     <% end %>

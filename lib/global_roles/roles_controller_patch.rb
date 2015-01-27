@@ -8,9 +8,9 @@ module GlobalRoles
         include GlobalRolesHelper
         helper GlobalRolesHelper
 
-        before_filter :role_finder, :only => self::InstanceMethods.instance_methods(false)
-        before_filter :active_projects, :only => [:edit, :edit_user_projects_by_role, :show_users_by_role, :add_user_to_role,
-                                                  :remove_user_from_role, :autocomplete_for_user]
+        before_filter :role_finder, only: self::InstanceMethods.instance_methods(false)
+        before_filter :active_projects, only: [:edit, :edit_user_projects_by_role, :show_users_by_role, :add_user_to_role,
+                                               :remove_user_from_role, :autocomplete_for_user]
       end
     end
 
@@ -27,11 +27,11 @@ module GlobalRoles
       end
 
       def show_users_by_role
-        render :partial => 'roles/show_users_by_role'
+        render partial: 'roles/show_users_by_role'
       end
 
       def show_users_by_global_role
-        render :partial => 'roles/show_users_by_global_role'
+        render partial: 'roles/show_users_by_global_role'
       end
 
       def autocomplete_for_user
@@ -51,7 +51,7 @@ module GlobalRoles
         global_role.destroy
 
         respond_to do |format|
-          format.html { redirect_to :controller => 'roles', :action => 'edit', :tab => 'users_by_global_role' }
+          format.html { redirect_to controller: 'roles', action: 'edit', tab: 'users_by_global_role' }
           format.js
         end
       end
@@ -60,33 +60,32 @@ module GlobalRoles
         @principal_ids = params[:principals] || []
 
         if @principal_ids.is_a?(Array)
-          @principal_ids.each{|principal_id| GlobalRole.create(:user_id => principal_id, :role_id => @role.id ) }
+          @principal_ids.each{ |principal_id| GlobalRole.create(user_id: principal_id, role_id: @role.id) }
         end
 
         respond_to do |format|
-          format.html { redirect_to :controller => 'roles', :action => 'edit', :tab => 'users_by_global_role' }
+          format.html { redirect_to controller: 'roles', action: 'edit', tab: 'users_by_global_role' }
           format.js
         end
       end
 
       def remove_user_from_role
-        member_roles = MemberRole.joins(:members).where(role_id: @role.id, members: {user_id: params[:user_id]})
+        member_roles = MemberRole.joins(:member).where(role_id: @role.id, members: {user_id: params[:user_id]})
         member_roles.destroy_all
 
         respond_to do |format|
-          format.html { redirect_to :controller => 'roles', :action => 'edit', :tab => 'users_by_role' }
+          format.html { redirect_to controller: 'roles', action: 'edit', tab: 'users_by_role' }
           format.js
         end
       end
 
       def add_user_to_role
         @principal_ids = params[:principals] || []
-        project_id = params[:project_id] || 0
         @edited_principal_ids = []
 
-        if @principal_ids.is_a?(Array)
+        if @principal_ids.is_a?(Array) && params[:project_id].to_i > 0
           @principal_ids.each do |principal_id|
-            member = Member.find_or_new(params[:project_id], principal_id.to_i)
+            member = Member.where(project_id: params[:project_id], user_id: principal_id).first_or_initialize
             if !member.roles.include?(@role)
               member.roles << @role
               @edited_principal_ids << principal_id
@@ -95,7 +94,7 @@ module GlobalRoles
         end
 
         respond_to do |format|
-          format.html { redirect_to :controller => 'roles', :action => 'edit', :tab => 'users_by_role'}
+          format.html { redirect_to controller: 'roles', action: 'edit', tab: 'users_by_role'}
           format.js
         end
       end
@@ -106,23 +105,24 @@ module GlobalRoles
             @principal_id = params[:membership][:principal_id]
             project_ids = params[:membership][:project_ids] || []
 
-            if (project_ids.any?)
+            if project_ids.any?
               member_roles = MemberRole.joins(:member).where('members.project_id NOT IN (?)', project_ids)
-                                                      .where(:role_id => @role.id, :members => {:user_id => @principal_id})
+                                                      .where(role_id: @role.id, members: {user_id: @principal_id})
             else
-              member_roles = MemberRole.joins(:member).where(:role_id => @role.id, :members => {:user_id => @principal_id})
+              member_roles = MemberRole.joins(:member).where(role_id: @role.id, members: {user_id: @principal_id})
             end
             member_roles.destroy_all
 
             project_ids.each do |project_id|
-              member = Member.find_or_new(project_id, @principal_id)
-              member.member_roles << MemberRole.new(:role_id => @role.id, :member_id => member.id)
+              # member = Member.find_or_new(project_id, @principal_id)
+              member = Member.where(project_id: project_id, user_id:  @principal_id).first_or_initialize
+              member.member_roles << MemberRole.new(role_id: @role.id, member_id: member.id)
             end
           end
         end
 
         respond_to do |format|
-          format.html { redirect_to :controller => 'roles', :action => 'edit', :tab => 'users_by_role' }
+          format.html { redirect_to controller: 'roles', action: 'edit', tab: 'users_by_role' }
           format.js
         end
       end

@@ -1,2 +1,2 @@
-$('#tab-content-users_by_role').html('<%= escape_javascript(render :partial => 'roles/show_users_by_role') %>');
+$('#tab-content-users_by_role').html('<%= escape_javascript(render partial: 'roles/show_users_by_role') %>');
 $('tr#principal-<%= @principal_id %>').effect("highlight", {}, 1200);

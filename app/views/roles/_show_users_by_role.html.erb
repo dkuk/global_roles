@@ -1,4 +1,4 @@
-<%= content_tag(:div, js_err, :id => "errorExplanation") if local_assigns[:js_err] && !js_err.nil? %>
+<%= content_tag(:div, js_err, id: 'errorExplanation') if local_assigns[:js_err] && !js_err.nil? %>
 
 <div>
   <div class="splitcontentleft" style="width:65%;">
@@ -13,7 +13,10 @@
         </thead>
         <tbody>
         <% @role.principals.each do |principal| %>
-          <% principal_project_ids = principal.memberships.select{|member| member.roles.include?(@role)}.map{|member| member.try(:project).id} %>
+          <% principal_project_ids = principal.memberships
+                                              .select{ |member| member.roles.include?(@role) }
+                                              .map{ |member| member.try(:project).id } %>
+
             <tr id="principal-<%= principal.id %>" class="<%= cycle 'odd', 'even' %>">
               <% group_class = principal.instance_of?(Group) ? "glr-group" : "" %>
               <td class="principal-name <%= group_class %>">
@@ -27,12 +30,16 @@
                                         data-principal-id="<%= principal.id %>">
 
               <span id="principal-<%= principal.id %>-project-links">
-              <%= principal.memberships.select{|member| member.roles.include?(@role)}.map{|member| link_to_project_settings(member.project, {}, :id => "member-#{member.id}-project-link", :title => member.project.short_description)}.join(', ').html_safe %>
+              <%= principal.memberships
+                           .select{ |member| member.roles.include?(@role) }
+                           .map{ |member|
+                              link_to_project_settings(member.project, {}, id: "member-#{member.id}-project-link", title: member.project.short_description)
+                            }.join(', ').html_safe %>
               </span>
               </td>
               <td class="buttons">
-                <%= link_to_function "<span>#{l(:button_edit)}</span>".html_safe, "projectsFormShow(#{principal.id})", :class => 'in_link icon icon-edit' %>
-                <%= link_to("<span>#{l(:button_delete)}</span>".html_safe, "remove_user_from_role/#{principal.id}", :method => :delete, :remote => true, :class => 'in_link icon icon-del' ) %>
+                <%= link_to_function "<span>#{l(:button_edit)}</span>".html_safe, "projectsFormShow(#{principal.id})", class: 'in_link icon icon-edit' %>
+                <%= link_to("<span>#{l(:button_delete)}</span>".html_safe, "remove_user_from_role/#{principal.id}", method: :delete, remote: true, class: 'in_link icon icon-del' ) %>
               </td>
             </tr>
         <% end %>
@@ -44,23 +51,24 @@
   </div>
 
   <div class="I">
-    <%= form_tag({:controller => 'roles', :action => 'edit_user_projects_by_role', :id => @role.id}, {:method => :put, :remote => true, :id => "member-projects-form"}) do %>
+    <%= form_tag({controller: 'roles', action: 'edit_user_projects_by_role', id: @role.id}, {method: :put, remote: true, id: 'member-projects-form'}) do %>
       <p>
         <% @projects.each do |project| %>
-        <label><%= check_box_tag 'membership[project_ids][]', project.id, false, :id => project.id %>
+        <label><%= check_box_tag 'membership[project_ids][]', project.id, false, id: project.id %>
           <%=h project %>
         </label><br />
         <% end %>
       </p>
-      <%= hidden_field_tag 'membership[principal_id]', '', :id => 'edit_user_projects_by_role_principal_id' %>
-      <p><%= submit_tag l(:button_change), :class => "small" %>
-      <%= link_to l(:button_cancel), "#", :id => 'projects-form-cancel', :class => 'in_link' %>
+      <%= hidden_field_tag 'membership[principal_id]', '', id: 'edit_user_projects_by_role_principal_id' %>
+      <p>
+        <%= submit_tag l(:button_change), class: 'small' %>
+        <%= link_to l(:button_cancel), "#", id: 'projects-form-cancel', class: 'in_link' %>
       </p>
     <% end %>
   </div>
 
   <div class="splitcontentright" style="width:30%;">
-    <%= form_tag({:action => 'add_user_to_role'},{:id =>'select_users', :remote => true}) do %>
+    <%= form_tag({action: 'add_user_to_role'}, {id: 'select_users', remote: true}) do %>
       <fieldset>
         <legend><strong> <%= l(:label_add_user_to_role) %> </strong></legend>
         </br>
@@ -68,12 +76,12 @@
         <p><%= projects_select_tag('project_id', @projects) %></p>
 
         <strong> <%= l(:label_user) %> / <%= l(:label_group) %> </strong>
-        <p><%= text_field_tag('filter_users', '', :class => 'find-filter autocomplete', :data => {:url => autocomplete_for_user_role_path(@role)}) %></p>
+        <p><%= text_field_tag('filter_users', '', class: 'find-filter autocomplete', data: {url: autocomplete_for_user_role_path(@role)}) %></p>
         <div id="users-list" class="glr-list-container">
             <%= render_principals_for_role(@role) %>
         </div>
         <div class="glr-submit">
-          <%= submit_tag(l(:label_add_item), :id => 'add_user_to_role') %>
+          <%= submit_tag(l(:label_add_item), id: 'add_user_to_role') %>
           <div class="glr-no-project-selected" style="display: none;"><%= l(:label_no_project_selected) %></div>
         </div>
       </fieldset>

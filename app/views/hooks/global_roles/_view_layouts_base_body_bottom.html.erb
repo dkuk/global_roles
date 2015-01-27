@@ -1,6 +1,6 @@
 <% if controller_name == 'roles' && action_name == 'edit' %>
   <% tab = params[:tab] || nil %>
   <div id="roles_tabs" class="I">
-    <%= render :partial => 'roles/tabs', :locals => {:selected => tab} %>
+    <%= render partial: 'roles/tabs', locals: {selected: tab} %>
   </div>
 <% end %>
